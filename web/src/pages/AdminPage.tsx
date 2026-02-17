@@ -6,9 +6,19 @@ import FSMControls from '../components/admin/FSMControls';
 import OverlayControls from '../components/admin/OverlayControls';
 import EventLog from '../components/admin/EventLog';
 
+type Tab = 'general' | 'fsm' | 'overlays' | 'logs';
+
+const TABS: { key: Tab; label: string }[] = [
+  { key: 'general', label: '📡 General' },
+  { key: 'fsm', label: '🎮 FSM' },
+  { key: 'overlays', label: '🎨 Overlays' },
+  { key: 'logs', label: '📜 Logs' },
+];
+
 export default function AdminPage() {
   const { send } = useWebSocket();
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('general');
 
   const handleSend = useCallback((event: ControlEvent) => {
     send(event);
@@ -42,12 +52,12 @@ export default function AdminPage() {
   }, [send]);
 
   return (
-    <div className="h-screen w-screen grid grid-cols-2 bg-gray-900">
+    <div className="h-screen w-screen grid grid-cols-2 bg-gray-950">
       {/* Left: Player Preview */}
-      <div className="relative flex items-center justify-center bg-black border-r border-gray-700">
+      <div className="relative flex items-center justify-center bg-black border-r border-glass-border">
         {!iframeLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-gray-500 text-sm animate-pulse">Loading Player...</div>
+            <div className="text-gray-500 text-sm animate-pulse">✨ Loading Player...</div>
           </div>
         )}
         <iframe
@@ -57,25 +67,48 @@ export default function AdminPage() {
           allow="autoplay"
           onLoad={() => setIframeLoaded(true)}
         />
-        <span className="absolute top-2 left-2 text-xs bg-gray-800/80 text-gray-400 px-2 py-0.5 rounded pointer-events-none">
-          PREVIEW
+        <span className="absolute top-3 left-3 glass-badge pointer-events-none">
+          👁️ PREVIEW
         </span>
         <a
           href="/player"
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute top-2 right-2 text-xs bg-gray-800/80 text-gray-400 hover:text-white px-2 py-0.5 rounded transition-colors"
+          className="absolute top-3 right-3 glass-badge hover:text-white transition-colors"
         >
-          Open Fullscreen
+          🔗 Open Fullscreen
         </a>
       </div>
 
       {/* Right: Admin Panel */}
-      <div className="flex flex-col gap-4 p-4 overflow-hidden">
-        <SystemStatus />
-        <FSMControls onSend={handleSend} />
-        <OverlayControls onSend={handleSend} />
-        <EventLog />
+      <div className="admin-bg flex flex-col p-5 overflow-hidden">
+        <div className="flex items-center justify-between px-1 mb-4">
+          <h1 className="shimmer-text text-lg font-bold tracking-wide">
+            ✦ HoloBox Control ✦
+          </h1>
+          <span className="text-xs text-gray-600">⌨️ Keyboard shortcuts active</span>
+        </div>
+
+        {/* Tab bar */}
+        <div className="flex gap-1 px-1">
+          {TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`glass-tab ${activeTab === key ? 'glass-tab-active' : ''}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab content */}
+        <div className="glass-card flex-1 min-h-0 overflow-y-auto p-4 rounded-t-none glass-scroll flex flex-col">
+          {activeTab === 'general' && <SystemStatus />}
+          {activeTab === 'fsm' && <FSMControls onSend={handleSend} />}
+          {activeTab === 'overlays' && <OverlayControls onSend={handleSend} />}
+          {activeTab === 'logs' && <EventLog />}
+        </div>
       </div>
     </div>
   );

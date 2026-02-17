@@ -16,19 +16,17 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
   const [cardPosition, setCardPosition] = useState<'left' | 'right'>('right');
 
   return (
-    <div className="space-y-3">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Overlay Controls</h2>
-
+    <div>
       {/* Subtitle */}
-      <div className="space-y-1">
-        <label className="text-xs text-gray-500">Subtitle</label>
-        <div className="flex gap-1">
+      <div className="space-y-1.5">
+        <SectionLabel emoji="💬">Subtitle</SectionLabel>
+        <div className="flex gap-1.5">
           <input
             type="text"
             value={subtitleText}
             onChange={(e) => setSubtitleText(e.target.value)}
             placeholder="Subtitle text..."
-            className="flex-1 bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 focus:border-blue-500 outline-none"
+            className="flex-1 glass-input"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && subtitleText.trim()) {
                 const ttl = parseInt(subtitleTtl) || undefined;
@@ -40,11 +38,11 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
             type="number"
             value={subtitleTtl}
             onChange={(e) => setSubtitleTtl(e.target.value)}
-            className="w-16 bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 focus:border-blue-500 outline-none"
+            className="w-16 glass-input"
             placeholder="TTL"
           />
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <button
             onClick={() => {
               if (subtitleText.trim()) {
@@ -52,63 +50,65 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 onSend({ type: 'overlay.subtitle.set', text: subtitleText.trim(), ttlMs: ttl });
               }
             }}
-            className="flex-1 px-2 py-1 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded transition-colors"
+            className="flex-1 glass-btn bg-purple-500/15 border-purple-500/20 hover:bg-purple-500/25 hover:shadow-[0_0_12px_oklch(0.65_0.18_300_/_30%)]"
           >
-            Set Subtitle
+            ✨ Set Subtitle
           </button>
           <button
             onClick={() => onSend({ type: 'overlay.subtitle.clear' })}
-            className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors"
+            className="glass-btn"
           >
-            Clear
+            🧹 Clear
           </button>
         </div>
       </div>
 
+      <div className="border-t border-glass-border my-3" />
+
       {/* Card */}
-      <div className="space-y-1">
-        <label className="text-xs text-gray-500">Card Overlay</label>
+      <div className="space-y-1.5">
+        <SectionLabel emoji="🃏">Card Overlay</SectionLabel>
         <input
           type="text"
           value={cardTitle}
           onChange={(e) => setCardTitle(e.target.value)}
           placeholder="Title"
-          className="w-full bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 focus:border-blue-500 outline-none"
+          className="w-full glass-input"
         />
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <input
             type="text"
             value={cardSubtitle}
             onChange={(e) => setCardSubtitle(e.target.value)}
             placeholder="Subtitle"
-            className="flex-1 bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 focus:border-blue-500 outline-none"
+            className="flex-1 glass-input"
           />
           <input
             type="text"
             value={cardPrice}
             onChange={(e) => setCardPrice(e.target.value)}
-            placeholder="Price"
-            className="w-20 bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 focus:border-blue-500 outline-none"
+            placeholder="💰 Price"
+            className="w-24 glass-input"
           />
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <input
             type="text"
             value={cardCta}
             onChange={(e) => setCardCta(e.target.value)}
             placeholder="CTA text"
-            className="flex-1 bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 focus:border-blue-500 outline-none"
+            className="flex-1 glass-input"
           />
           <select
             value={cardPosition}
             onChange={(e) => setCardPosition(e.target.value as 'left' | 'right')}
-            className="bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 outline-none"
+            className="glass-input"
           >
-            <option value="right">Right</option>
-            <option value="left">Left</option>
+            <option value="right">→ Right</option>
+            <option value="left">← Left</option>
           </select>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <button
             onClick={() => {
               if (cardTitle.trim()) {
@@ -124,50 +124,59 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 });
               }
             }}
-            className="flex-1 px-2 py-1 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded transition-colors"
+            className="flex-1 glass-btn bg-purple-500/15 border-purple-500/20 hover:bg-purple-500/25 hover:shadow-[0_0_12px_oklch(0.65_0.18_300_/_30%)]"
           >
-            Show Card
+            🃏 Show Card
           </button>
           <button
             onClick={() => onSend({ type: 'overlay.clearAll' })}
-            className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors"
+            className="glass-btn"
           >
-            Clear All
+            💥 Clear All
           </button>
         </div>
       </div>
 
+      <div className="border-t border-glass-border my-3" />
+
       {/* QR */}
-      <div className="space-y-1">
-        <label className="text-xs text-gray-500">QR Code</label>
-        <div className="flex gap-1">
-          <input
-            type="text"
-            value={qrUrl}
-            onChange={(e) => setQrUrl(e.target.value)}
-            placeholder="https://example.com"
-            className="flex-1 bg-gray-800 text-white text-sm rounded px-2 py-1 border border-gray-700 focus:border-blue-500 outline-none"
-          />
-        </div>
-        <div className="flex gap-1">
+      <div className="space-y-1.5">
+        <SectionLabel emoji="📱">QR Code</SectionLabel>
+        <input
+          type="text"
+          value={qrUrl}
+          onChange={(e) => setQrUrl(e.target.value)}
+          placeholder="https://example.com"
+          className="w-full glass-input"
+        />
+        <div className="flex gap-1.5">
           <button
             onClick={() => {
               if (qrUrl.trim()) {
                 onSend({ type: 'overlay.qr.show', url: qrUrl.trim(), ttlMs: 10000 });
               }
             }}
-            className="flex-1 px-2 py-1 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded transition-colors"
+            className="flex-1 glass-btn bg-purple-500/15 border-purple-500/20 hover:bg-purple-500/25 hover:shadow-[0_0_12px_oklch(0.65_0.18_300_/_30%)]"
           >
-            Show QR
+            📱 Show QR
           </button>
           <button
             onClick={() => onSend({ type: 'overlay.qr.hide' })}
-            className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors"
+            className="glass-btn"
           >
-            Hide QR
+            🙈 Hide QR
           </button>
         </div>
       </div>
     </div>
+  );
+}
+
+function SectionLabel({ children, emoji }: { children: React.ReactNode; emoji: string }) {
+  return (
+    <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-gray-400">
+      <span>{emoji}</span>
+      {children}
+    </label>
   );
 }
