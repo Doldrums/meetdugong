@@ -34,6 +34,36 @@
 
 <br/>
 
+### 🎬 Character Gallery
+
+#### 🔄 Idle Loops
+<p>
+  <img src="docs/previews/idle_0.gif" width="160" alt="idle_0" />
+  <img src="docs/previews/idle_1.gif" width="160" alt="idle_1" />
+  <img src="docs/previews/idle_2.gif" width="160" alt="idle_2" />
+  <img src="docs/previews/idle_3.gif" width="160" alt="idle_3" />
+  <img src="docs/previews/idle_4.gif" width="160" alt="idle_4" />
+</p>
+
+#### 🎭 Actions
+<p>
+  <img src="docs/previews/aware_0.gif" width="160" alt="AWARE" />
+  <img src="docs/previews/listen_0.gif" width="160" alt="LISTEN" />
+  <img src="docs/previews/think_0.gif" width="160" alt="THINK (variant 0)" />
+  <img src="docs/previews/think_1.gif" width="160" alt="THINK (variant 1)" />
+  <img src="docs/previews/show_right_0.gif" width="160" alt="SHOW" />
+</p>
+
+#### 🌉 Bridge Transitions
+<p>
+  <img src="docs/previews/idle_to_show_right.gif" width="240" alt="IDLE → SHOW" />
+  <img src="docs/previews/show_right_to_idle.gif" width="240" alt="SHOW → IDLE" />
+</p>
+
+<sub>📹 3s animated previews @ 12fps · generated from <code>content/</code></sub>
+
+<br/><br/>
+
 </div>
 
 ## 🌟 Overview
@@ -101,17 +131,6 @@ The system is built for a physical installation at **MBZUAI** (Mohamed bin Zayed
 ```
 
 ---
-
-## 📸 Screenshots
-
-> 🚧 _Screenshots coming soon — the glassmorphism HUD aesthetic is best experienced live._
-
-<!--
-<p align="center">
-  <img src="docs/screenshot-player.png" width="45%" alt="Player" />
-  <img src="docs/screenshot-admin.png" width="45%" alt="Admin" />
-</p>
--->
 
 ---
 
