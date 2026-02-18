@@ -57,6 +57,49 @@
   50%      { opacity: 1; }
 }
 
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+@keyframes hud-scan {
+  0%   { top: -10%; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { top: 110%; opacity: 0; }
+}
+
+@keyframes hud-pulse {
+  0%, 100% { opacity: 0.35; box-shadow: 0 0 4px oklch(0.78 0.12 195 / 50%); }
+  50%      { opacity: 1;   box-shadow: 0 0 10px oklch(0.78 0.12 195 / 70%), 0 0 18px oklch(0.72 0.12 290 / 15%); }
+}
+
+@keyframes hud-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 0.65; }
+  20%, 24%, 55% { opacity: 0.25; }
+}
+
+@keyframes hud-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes hud-data-scroll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+@keyframes hud-node-orbit {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* ── Base Layer ──────────────────────────────────────────── */
 @layer base {
   body {

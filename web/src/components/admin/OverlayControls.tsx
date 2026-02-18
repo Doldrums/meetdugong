@@ -1,182 +1,276 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { ControlEvent } from '@shared/types';
+
+// ── Preset Data ─────────────────────────────────────────────
+
+const SUBTITLE_PRESETS = [
+  { key: 'welcome', label: 'Welcome', text: 'Welcome to MBZUAI — the AI University', ttlMs: 30000 },
+  { key: 'openday', label: 'Open Day', text: 'Open Day 2025 — Register now at mbzuai.ac.ae', ttlMs: 30000 },
+  { key: 'research', label: 'Research', text: 'Pioneering research in NLP, CV & Machine Learning', ttlMs: 30000 },
+  { key: 'apply', label: 'Apply Now', text: 'Applications open for Fall 2025 — Fully funded!', ttlMs: 30000 },
+];
+
+const QR_PRESETS = [
+  { key: 'web', label: 'MBZUAI Website', url: 'https://mbzuai.ac.ae' },
+  { key: 'admit', label: 'Admissions Portal', url: 'https://mbzuai.ac.ae/admissions' },
+  { key: 'papers', label: 'Research Papers', url: 'https://mbzuai.ac.ae/research' },
+];
+
+const MAP_CARD_PRESETS = [
+  {
+    key: 'campus',
+    label: 'Main Campus',
+    title: 'MBZUAI Campus',
+    subtitle: 'Masdar City, Abu Dhabi, UAE',
+    cta: 'Get directions →',
+    imageUrl: 'https://picsum.photos/seed/masdar1/400/200',
+    position: 'left' as const,
+  },
+  {
+    key: 'research-center',
+    label: 'Research Center',
+    title: 'AI Research Center',
+    subtitle: 'Innovation Hub, Masdar City',
+    cta: 'Schedule a visit →',
+    imageUrl: 'https://picsum.photos/seed/abudhabi3/400/200',
+    position: 'right' as const,
+  },
+];
+
+const IMAGE_CARD_PRESETS = [
+  {
+    key: 'nlp',
+    label: 'NLP Program',
+    title: 'Natural Language Processing',
+    subtitle: 'MSc & PhD Programs',
+    price: 'Fully Funded',
+    cta: 'Explore program →',
+    imageUrl: 'https://picsum.photos/seed/nlplab1/400/200',
+    position: 'right' as const,
+  },
+  {
+    key: 'cv',
+    label: 'Computer Vision',
+    title: 'Computer Vision',
+    subtitle: 'Deep Learning · 3D Perception',
+    price: 'Fully Funded',
+    cta: 'Learn more →',
+    imageUrl: 'https://picsum.photos/seed/cvision2/400/200',
+    position: 'right' as const,
+  },
+  {
+    key: 'ml',
+    label: 'Machine Learning',
+    title: 'Machine Learning',
+    subtitle: 'Foundations · Optimization · AI Safety',
+    price: 'Fully Funded',
+    cta: 'Apply now →',
+    imageUrl: 'https://picsum.photos/seed/mlresearch3/400/200',
+    position: 'left' as const,
+  },
+];
+
+// ── Building Blocks ─────────────────────────────────────────
+
+function PresetCard({
+  label,
+  description,
+  onClick,
+  sent,
+  accentHue,
+}: {
+  label: string;
+  description: string;
+  onClick: () => void;
+  sent: boolean;
+  accentHue: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="glass-card p-3 text-left cursor-pointer group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3"
+    >
+      {/* Accent bar */}
+      <div
+        className="w-1 self-stretch rounded-full shrink-0 transition-all duration-300 group-hover:shadow-[0_0_8px_var(--accent)]"
+        style={{
+          '--accent': `oklch(0.78 0.15 ${accentHue})`,
+          background: sent
+            ? 'oklch(0.72 0.19 155)'
+            : `oklch(0.78 0.15 ${accentHue} / 50%)`,
+          boxShadow: sent ? '0 0 8px oklch(0.72 0.19 155 / 60%)' : undefined,
+        } as React.CSSProperties}
+      />
+
+      {/* Content */}
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-white/90 truncate">{label}</p>
+        <p className="text-[11px] text-gray-500 truncate mt-0.5 group-hover:text-gray-400 transition-colors">
+          {description}
+        </p>
+      </div>
+
+      {/* Action indicator */}
+      <span
+        className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 ${
+          sent
+            ? 'text-green-400 opacity-100'
+            : 'opacity-0 group-hover:opacity-100'
+        }`}
+        style={{ color: sent ? undefined : `oklch(0.78 0.12 ${accentHue})` }}
+      >
+        {sent ? '✓ Sent' : 'Send ▶'}
+      </span>
+    </button>
+  );
+}
+
+function Section({
+  title,
+  badge,
+  badgeHue,
+  children,
+}: {
+  title: string;
+  badge: string;
+  badgeHue: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="space-y-2">
+      <div className="flex items-center justify-between">
+        <h3 className="section-header">{title}</h3>
+        <span
+          className="glass-badge text-[10px] uppercase tracking-widest font-semibold"
+          style={{
+            background: `oklch(0.78 0.15 ${badgeHue} / 8%)`,
+            borderColor: `oklch(0.78 0.15 ${badgeHue} / 20%)`,
+            color: `oklch(0.78 0.12 ${badgeHue})`,
+          }}
+        >
+          {badge}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">{children}</div>
+    </section>
+  );
+}
+
+// ── Main Component ──────────────────────────────────────────
 
 interface OverlayControlsProps {
   onSend: (event: ControlEvent) => void;
 }
 
 export default function OverlayControls({ onSend }: OverlayControlsProps) {
-  const [subtitleText, setSubtitleText] = useState('');
-  const [subtitleTtl, setSubtitleTtl] = useState('3000');
-  const [qrUrl, setQrUrl] = useState('');
-  const [cardTitle, setCardTitle] = useState('');
-  const [cardSubtitle, setCardSubtitle] = useState('');
-  const [cardPrice, setCardPrice] = useState('');
-  const [cardCta, setCardCta] = useState('');
-  const [cardPosition, setCardPosition] = useState<'left' | 'right'>('right');
+  const [sentKey, setSentKey] = useState<string | null>(null);
 
-  return (
-    <div>
-      {/* Subtitle */}
-      <div className="space-y-1.5">
-        <SectionLabel emoji="💬">Subtitle</SectionLabel>
-        <div className="flex gap-1.5">
-          <input
-            type="text"
-            value={subtitleText}
-            onChange={(e) => setSubtitleText(e.target.value)}
-            placeholder="Subtitle text..."
-            className="flex-1 glass-input"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && subtitleText.trim()) {
-                const ttl = parseInt(subtitleTtl) || undefined;
-                onSend({ type: 'overlay.subtitle.set', text: subtitleText.trim(), ttlMs: ttl });
-              }
-            }}
-          />
-          <input
-            type="number"
-            value={subtitleTtl}
-            onChange={(e) => setSubtitleTtl(e.target.value)}
-            className="w-16 glass-input"
-            placeholder="TTL"
-          />
-        </div>
-        <div className="flex gap-1.5">
-          <button
-            onClick={() => {
-              if (subtitleText.trim()) {
-                const ttl = parseInt(subtitleTtl) || undefined;
-                onSend({ type: 'overlay.subtitle.set', text: subtitleText.trim(), ttlMs: ttl });
-              }
-            }}
-            className="flex-1 glass-btn bg-purple-500/15 border-purple-500/20 hover:bg-purple-500/25 hover:shadow-[0_0_12px_oklch(0.65_0.18_300_/_30%)]"
-          >
-            ✨ Set Subtitle
-          </button>
-          <button
-            onClick={() => onSend({ type: 'overlay.subtitle.clear' })}
-            className="glass-btn"
-          >
-            🧹 Clear
-          </button>
-        </div>
-      </div>
-
-      <div className="border-t border-glass-border my-3" />
-
-      {/* Card */}
-      <div className="space-y-1.5">
-        <SectionLabel emoji="🃏">Card Overlay</SectionLabel>
-        <input
-          type="text"
-          value={cardTitle}
-          onChange={(e) => setCardTitle(e.target.value)}
-          placeholder="Title"
-          className="w-full glass-input"
-        />
-        <div className="flex gap-1.5">
-          <input
-            type="text"
-            value={cardSubtitle}
-            onChange={(e) => setCardSubtitle(e.target.value)}
-            placeholder="Subtitle"
-            className="flex-1 glass-input"
-          />
-          <input
-            type="text"
-            value={cardPrice}
-            onChange={(e) => setCardPrice(e.target.value)}
-            placeholder="💰 Price"
-            className="w-24 glass-input"
-          />
-        </div>
-        <div className="flex gap-1.5">
-          <input
-            type="text"
-            value={cardCta}
-            onChange={(e) => setCardCta(e.target.value)}
-            placeholder="CTA text"
-            className="flex-1 glass-input"
-          />
-          <select
-            value={cardPosition}
-            onChange={(e) => setCardPosition(e.target.value as 'left' | 'right')}
-            className="glass-input"
-          >
-            <option value="right">→ Right</option>
-            <option value="left">← Left</option>
-          </select>
-        </div>
-        <div className="flex gap-1.5">
-          <button
-            onClick={() => {
-              if (cardTitle.trim()) {
-                onSend({
-                  type: 'overlay.card.show',
-                  id: `card_${Date.now()}`,
-                  title: cardTitle.trim(),
-                  subtitle: cardSubtitle || undefined,
-                  price: cardPrice || undefined,
-                  cta: cardCta || undefined,
-                  position: cardPosition,
-                  ttlMs: 8000,
-                });
-              }
-            }}
-            className="flex-1 glass-btn bg-purple-500/15 border-purple-500/20 hover:bg-purple-500/25 hover:shadow-[0_0_12px_oklch(0.65_0.18_300_/_30%)]"
-          >
-            🃏 Show Card
-          </button>
-          <button
-            onClick={() => onSend({ type: 'overlay.clearAll' })}
-            className="glass-btn"
-          >
-            💥 Clear All
-          </button>
-        </div>
-      </div>
-
-      <div className="border-t border-glass-border my-3" />
-
-      {/* QR */}
-      <div className="space-y-1.5">
-        <SectionLabel emoji="📱">QR Code</SectionLabel>
-        <input
-          type="text"
-          value={qrUrl}
-          onChange={(e) => setQrUrl(e.target.value)}
-          placeholder="https://example.com"
-          className="w-full glass-input"
-        />
-        <div className="flex gap-1.5">
-          <button
-            onClick={() => {
-              if (qrUrl.trim()) {
-                onSend({ type: 'overlay.qr.show', url: qrUrl.trim(), ttlMs: 10000 });
-              }
-            }}
-            className="flex-1 glass-btn bg-purple-500/15 border-purple-500/20 hover:bg-purple-500/25 hover:shadow-[0_0_12px_oklch(0.65_0.18_300_/_30%)]"
-          >
-            📱 Show QR
-          </button>
-          <button
-            onClick={() => onSend({ type: 'overlay.qr.hide' })}
-            className="glass-btn"
-          >
-            🙈 Hide QR
-          </button>
-        </div>
-      </div>
-    </div>
+  const send = useCallback(
+    (key: string, event: ControlEvent) => {
+      onSend(event);
+      setSentKey(key);
+      setTimeout(() => setSentKey(null), 1200);
+    },
+    [onSend],
   );
-}
 
-function SectionLabel({ children, emoji }: { children: React.ReactNode; emoji: string }) {
   return (
-    <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-gray-400">
-      <span>{emoji}</span>
-      {children}
-    </label>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="section-header">🎨 Stage Visuals</h2>
+        <button
+          type="button"
+          onClick={() => onSend({ type: 'overlay.clearAll' })}
+          className="glass-btn text-red-400/80 hover:text-red-300 hover:shadow-[0_0_12px_oklch(0.63_0.22_25_/_25%)]"
+        >
+          💥 Clear All
+        </button>
+      </div>
+
+      {/* Text Overlays */}
+      <Section title="💬 Text Overlays" badge="subtitle" badgeHue={280}>
+        {SUBTITLE_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={p.text}
+            sent={sentKey === p.key}
+            accentHue={280}
+            onClick={() =>
+              send(p.key, { type: 'overlay.subtitle.set', text: p.text, ttlMs: p.ttlMs })
+            }
+          />
+        ))}
+      </Section>
+
+      {/* QR Codes */}
+      <Section title="📱 QR Codes" badge="qr" badgeHue={195}>
+        {QR_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={p.url.replace(/^https?:\/\//, '')}
+            sent={sentKey === p.key}
+            accentHue={195}
+            onClick={() =>
+              send(p.key, { type: 'overlay.qr.show', url: p.url, ttlMs: 30000 })
+            }
+          />
+        ))}
+      </Section>
+
+      {/* Map Cards */}
+      <Section title="🗺️ Map Cards" badge="location" badgeHue={160}>
+        {MAP_CARD_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={p.subtitle}
+            sent={sentKey === p.key}
+            accentHue={160}
+            onClick={() =>
+              send(p.key, {
+                type: 'overlay.card.show',
+                id: `card_${Date.now()}`,
+                title: p.title,
+                subtitle: p.subtitle,
+                cta: p.cta,
+                imageUrl: p.imageUrl,
+                position: p.position,
+                ttlMs: 30000,
+              })
+            }
+          />
+        ))}
+      </Section>
+
+      {/* Image Cards */}
+      <Section title="🖼️ Image Cards" badge="media" badgeHue={220}>
+        {IMAGE_CARD_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={`${p.subtitle} · ${p.price}`}
+            sent={sentKey === p.key}
+            accentHue={220}
+            onClick={() =>
+              send(p.key, {
+                type: 'overlay.card.show',
+                id: `card_${Date.now()}`,
+                title: p.title,
+                subtitle: p.subtitle,
+                price: p.price,
+                cta: p.cta,
+                imageUrl: p.imageUrl,
+                position: p.position,
+                ttlMs: 30000,
+              })
+            }
+          />
+        ))}
+      </Section>
+    </div>
   );
 }
