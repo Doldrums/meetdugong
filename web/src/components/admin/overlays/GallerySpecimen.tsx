@@ -42,7 +42,6 @@ export default function GallerySpecimen({
       ([entry]) => {
         if (entry.isIntersecting && !hasEntered) {
           setHasEntered(true);
-          // Small delay so the card is visible before animation starts
           setTimeout(() => setShow(true), 300);
         }
       },
@@ -63,14 +62,14 @@ export default function GallerySpecimen({
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-white/80 truncate">{name}</p>
-          <p className="text-[10px] text-white/30 truncate">{description}</p>
+          <p className="text-xs font-bold text-white truncate">{name}</p>
+          <p className="text-[10px] text-white/50 truncate">{description}</p>
         </div>
         <span
-          className="glass-badge text-[9px] uppercase tracking-widest font-semibold shrink-0 ml-2"
+          className="glass-badge text-[9px] uppercase tracking-widest font-bold shrink-0 ml-2"
           style={{
-            background: `${badgeColor}14`,
-            borderColor: `${badgeColor}33`,
+            background: `${badgeColor}30`,
+            borderColor: `${badgeColor}60`,
             color: badgeColor,
           }}
         >
@@ -78,30 +77,26 @@ export default function GallerySpecimen({
         </span>
       </div>
 
-      {/* Dark viewport */}
+      {/* Dark viewport — pure black for maximum contrast */}
       <div
         ref={containerRef}
         onClick={replay}
-        className="relative aspect-video rounded-xl overflow-hidden border border-white/[0.08] cursor-pointer group shadow-[0_2px_16px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.04)]"
+        className="relative aspect-video rounded-xl overflow-hidden cursor-pointer group"
+        style={{
+          border: '1px solid rgba(255,255,255,0.12)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)',
+        }}
       >
-        {/* Background */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse at 30% 20%, rgba(30, 30, 40, 0.6) 0%, transparent 60%), ' +
-              'radial-gradient(ellipse at 70% 80%, rgba(25, 25, 35, 0.4) 0%, transparent 50%), ' +
-              '#0a0a0f',
-          }}
-        />
+        {/* Pure black background */}
+        <div className="absolute inset-0 bg-black" />
 
-        {/* Grid */}
+        {/* Faint grid */}
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.06]"
           style={{
             backgroundImage:
-              'linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px), ' +
-              'linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
+              'linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px), ' +
+              'linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px)',
             backgroundSize: '24px 24px',
           }}
         />
@@ -109,15 +104,15 @@ export default function GallerySpecimen({
         {/* Scanline */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
-            className="absolute left-0 right-0 h-8 opacity-[0.03]"
+            className="absolute left-0 right-0 h-8 opacity-[0.04]"
             style={{
-              background: 'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
+              background: 'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.9), transparent)',
               animation: 'scanline 4s linear infinite',
             }}
           />
         </div>
 
-        {/* Scaled 1920×1080 viewport */}
+        {/* Scaled 1920x1080 viewport */}
         {scale > 0 && (
           <div
             className="absolute top-0 left-0 origin-top-left"
@@ -134,11 +129,11 @@ export default function GallerySpecimen({
         )}
 
         {/* Top edge highlight */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
         {/* Replay hint on hover */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <div className="glass-badge text-[10px] text-white/60 font-medium px-3 py-1">
+          <div className="glass-badge text-[10px] text-white/80 font-semibold px-3 py-1">
             Click to replay
           </div>
         </div>

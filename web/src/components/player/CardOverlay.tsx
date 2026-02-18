@@ -1,18 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOverlayStore, type CardOverlayData } from '../../stores/overlayStore';
-import HudPanel from './HudPanel';
 import ParticleBurst from './ParticleBurst';
-
-const SF =
-  '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif';
-
-/** Teal → blue → soft purple tinted glass */
-const CARD_TINT = {
-  background:
-    'linear-gradient(-45deg, rgba(60, 160, 200, 0.22), rgba(80, 100, 220, 0.24), rgba(130, 80, 200, 0.20), rgba(60, 140, 210, 0.22), rgba(100, 80, 220, 0.24))',
-  backgroundSize: '400% 400%',
-  animation: 'mesh-flow 12s ease infinite',
-};
+import { CardPanel } from './overlayPrimitives';
 
 const EXIT_DURATION = 400;
 
@@ -123,85 +112,7 @@ function AnimatedCard({
           overflow: 'hidden',
         }}
       >
-        <HudPanel tint={CARD_TINT} style={{ borderRadius: 22 }}>
-          {/* Hero image */}
-          {card.imageUrl && (
-            <div className="relative overflow-hidden rounded-t-[22px]">
-              <img
-                src={card.imageUrl}
-                alt={card.title}
-                className="w-full h-40 object-cover"
-                style={{ opacity: 0.80 }}
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(
-                    to top,
-                    rgba(80, 120, 200, 0.65) 0%,
-                    rgba(80, 120, 200, 0.25) 40%,
-                    transparent 75%
-                  )`,
-                }}
-              />
-            </div>
-          )}
-
-          {/* Content */}
-          <div className="px-4 pb-4 pt-3 space-y-1.5" style={{ fontFamily: SF }}>
-            <h3
-              className="font-bold text-base leading-tight"
-              style={{
-                color: 'rgba(255, 255, 255, 0.95)',
-                textShadow: '0 1px 4px rgba(40, 80, 160, 0.35)',
-              }}
-            >
-              {card.title}
-            </h3>
-
-            {card.subtitle && (
-              <p
-                className="text-sm leading-snug"
-                style={{
-                  color: 'rgba(255, 255, 255, 0.65)',
-                  textShadow: '0 1px 3px rgba(40, 80, 160, 0.20)',
-                }}
-              >
-                {card.subtitle}
-              </p>
-            )}
-
-            {card.price && (
-              <p
-                className="text-lg font-bold"
-                style={{
-                  color: '#fff',
-                  textShadow: '0 0 12px rgba(255, 255, 255, 0.40)',
-                }}
-              >
-                {card.price}
-              </p>
-            )}
-
-            {card.cta && (
-              <>
-                <div
-                  className="h-px w-full mt-2 mb-1.5"
-                  style={{
-                    background:
-                      'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.25), transparent)',
-                  }}
-                />
-                <p
-                  className="text-xs font-semibold"
-                  style={{ color: 'rgba(255, 255, 255, 0.85)' }}
-                >
-                  {card.cta}
-                </p>
-              </>
-            )}
-          </div>
-        </HudPanel>
+        <CardPanel card={card} />
       </div>
       <ParticleBurst trigger={particles} color="rgba(120, 180, 255, 0.9)" />
     </div>
