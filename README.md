@@ -21,17 +21,26 @@
 
 <br/>
 
-<img src="https://img.shields.io/badge/⚛_React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React 19" />
-<img src="https://img.shields.io/badge/🚀_Express-5-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express 5" />
-<img src="https://img.shields.io/badge/💎_TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-<img src="https://img.shields.io/badge/🎨_Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind v4" />
-<img src="https://img.shields.io/badge/⚡_WebSocket-RFC_6455-010101?style=for-the-badge&logo=socketdotio&logoColor=white" alt="WebSocket" />
+<a href="https://skillicons.dev">
+  <img src="https://skillicons.dev/icons?i=react,express,ts,tailwind,vite,docker,nodejs,pnpm&theme=dark" alt="Tech Stack" />
+</a>
+
 <br/>
-<img src="https://img.shields.io/badge/⚡_Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-<img src="https://img.shields.io/badge/🐳_Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-<img src="https://img.shields.io/badge/🔒_Caddy-2-1F88C0?style=for-the-badge&logo=caddy&logoColor=white" alt="Caddy" />
-<img src="https://img.shields.io/badge/🐻_Zustand-5-443E38?style=for-the-badge&logoColor=white" alt="Zustand" />
-<img src="https://img.shields.io/badge/📦_pnpm-9-F69220?style=for-the-badge&logo=pnpm&logoColor=white" alt="pnpm" />
+
+<table>
+  <tr>
+    <td align="center"><strong>⚛️</strong><br/><sub>React 19</sub></td>
+    <td align="center"><strong>🚀</strong><br/><sub>Express 5</sub></td>
+    <td align="center"><strong>💎</strong><br/><sub>TypeScript 5.8</sub></td>
+    <td align="center"><strong>🎨</strong><br/><sub>Tailwind 4</sub></td>
+    <td align="center"><strong>⚡</strong><br/><sub>Vite 6</sub></td>
+    <td align="center"><strong>🐻</strong><br/><sub>Zustand 5</sub></td>
+    <td align="center"><strong>🔌</strong><br/><sub>WebSocket</sub></td>
+    <td align="center"><strong>🐳</strong><br/><sub>Docker</sub></td>
+    <td align="center"><strong>🔒</strong><br/><sub>Caddy 2</sub></td>
+    <td align="center"><strong>📦</strong><br/><sub>pnpm</sub></td>
+  </tr>
+</table>
 
 <br/><br/>
 
