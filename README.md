@@ -57,7 +57,39 @@
 
 <br/>
 
-[🌟 Overview](#-overview) · [🏗️ Architecture](#️-architecture) · [🎯 Features](#-features) · [🚀 Getting Started](#-getting-started) · [🎬 Content System](#-content-system) · [📡 WebSocket Protocol](#-websocket-protocol) · [🌐 Deployment](#-deployment)
+<details>
+<summary><strong>Table of Contents 📜</strong></summary>
+
+- [🌟 Overview](#-overview)
+- [🏗️ Architecture](#️-architecture)
+- [🎯 Features](#-features)
+  - [🎬 Player](#-player)
+  - [🎛️ Admin](#️-admin)
+  - [🖥️ Backend](#️-backend)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [📂 Project Structure](#-project-structure)
+- [🚀 Getting Started](#-getting-started)
+  - [📋 Prerequisites](#-prerequisites)
+  - [📥 Install](#-install)
+  - [💻 Development](#-development)
+  - [✅ Type Checking](#-type-checking)
+  - [📦 Production Build](#-production-build)
+  - [🐳 Docker](#-docker)
+- [🎬 Content System](#-content-system)
+  - [📁 Clip Categories](#-clip-categories)
+  - [📦 Current Content Inventory](#-current-content-inventory)
+  - [➕ Adding a New State](#-adding-a-new-state)
+  - [🌉 Bridge Resolution](#-bridge-resolution)
+- [📡 WebSocket Protocol](#-websocket-protocol)
+  - [⬆️ Control Events (Client → Server)](#️-control-events-client--server)
+  - [⬇️ Broadcast Events (Server → All Clients)](#️-broadcast-events-server--all-clients)
+- [⌨️ Keyboard Shortcuts](#️-keyboard-shortcuts)
+- [🌐 Deployment](#-deployment)
+  - [🏗️ Production Stack](#️-production-stack)
+  - [🌍 Domain](#-domain)
+- [🎨 Design System](#-design-system)
+
+</details>
 
 <br/>
 
