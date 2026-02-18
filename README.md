@@ -1,14 +1,6 @@
 <div align="center">
   <a href="https://github.com/Doldrums/meetdugong">
-    <img src="https://github.com/Doldrums/meetdugong/blob/main/docs/logo.svg?raw=true" alt="IEC HoloBox" height="180">
-  </a>
-
-  <h1>🔮 Dugong</h1>
-
-  <h3>The Embodied K2 Agent for Physical and Digital Spaces</h3>
-
-  <a href="https://meetdugong.live">
-    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=%E2%9C%A8+Spatial+interface+generation+from+AI+reasoning;%F0%9F%8E%AC+Embodied+intelligence+for+MBZUAI" alt="Typing SVG" />
+    <img src="https://github.com/Doldrums/meetdugong/blob/main/docs/logo.svg?raw=true" alt="Dugong" width="700">
   </a>
 
   <br/><br/>
