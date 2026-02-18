@@ -8,9 +8,8 @@
 
 <br/>
 
-[![🌐 Production](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live&style=for-the-badge&logo=caddy&logoColor=0A0A0A&label=meetdugong.live&up_message=online&down_message=offline&up_color=06B6D4&down_color=FF1744)](https://meetdugong.live)
-&nbsp;
-[![🏥 Health](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live%2Fstatus&style=for-the-badge&logo=checkmarx&logoColor=0A0A0A&label=health&up_message=healthy&down_message=down&up_color=14B8A6&down_color=FF1744)](https://meetdugong.live/status)
+[![Production](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live&label=meetdugong.live&up_message=online&down_message=offline&up_color=06B6D4&down_color=FF1744)](https://meetdugong.live)
+[![Health](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live%2Fstatus&label=health&up_message=healthy&down_message=down&up_color=14B8A6&down_color=FF1744)](https://meetdugong.live/status)
 
 <br/>
 
@@ -44,37 +43,17 @@
 
 <br/>
 
-#### `⚡ TECH STACK`
-
-<table>
-  <tr>
-    <td align="center"><b>Frontend</b></td>
-    <td>
-      <img src="https://img.shields.io/badge/React_19-00E5FF?style=flat-square&logo=react&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/TypeScript_5.8-00E5FF?style=flat-square&logo=typescript&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/Tailwind_4-00E5FF?style=flat-square&logo=tailwindcss&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/Vite_6-00E5FF?style=flat-square&logo=vite&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/Zustand_5-00E5FF?style=flat-square&logo=zustand&logoColor=0A0A0A" />
-    </td>
-  </tr>
-  <tr>
-    <td align="center"><b>Backend</b></td>
-    <td>
-      <img src="https://img.shields.io/badge/Express_5-14B8A6?style=flat-square&logo=express&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/Node_22-14B8A6?style=flat-square&logo=nodedotjs&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/WebSocket-14B8A6?style=flat-square&logo=socketdotio&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/esbuild-14B8A6?style=flat-square&logo=esbuild&logoColor=0A0A0A" />
-    </td>
-  </tr>
-  <tr>
-    <td align="center"><b>Infra</b></td>
-    <td>
-      <img src="https://img.shields.io/badge/Docker-67E8F9?style=flat-square&logo=docker&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/Caddy_2-67E8F9?style=flat-square&logo=caddy&logoColor=0A0A0A" />
-      <img src="https://img.shields.io/badge/pnpm-67E8F9?style=flat-square&logo=pnpm&logoColor=0A0A0A" />
-    </td>
-  </tr>
-</table>
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Tailwind](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vite.dev)
+[![Zustand](https://img.shields.io/badge/Zustand-5-453B38)](https://zustand.docs.pmnd.rs)
+[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com)
+[![WebSocket](https://img.shields.io/badge/WebSocket-ws-010101?logo=socketdotio&logoColor=white)](https://github.com/websockets/ws)
+[![Node.js](https://img.shields.io/badge/Node.js-22-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![Caddy](https://img.shields.io/badge/Caddy-2-1F88C0?logo=caddy&logoColor=white)](https://caddyserver.com)
+[![pnpm](https://img.shields.io/badge/pnpm-9-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
 
 <br/>
 
