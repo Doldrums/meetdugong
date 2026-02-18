@@ -1,7 +1,11 @@
 <div align="center">
   <a href="https://github.com/Doldrums/meetdugong">
-    <img src="https://github.com/Doldrums/meetdugong/blob/main/docs/logo.svg?raw=true" alt="Dugong" width="700">
+    <img src="https://github.com/Doldrums/meetdugong/blob/main/docs/logo.svg?raw=true" alt="Dugong" height="200">
   </a>
+
+  <h1>Dugong</h1>
+
+  <h3>The Embodied K2 Agent for Physical and Digital Spaces</h3>
 
   <br/><br/>
 
