@@ -3,10 +3,12 @@
     <img src="https://github.com/Doldrums/meetdugong/blob/main/docs/logo.svg?raw=true" alt="IEC HoloBox" height="180">
   </a>
 
-  <h1>🔮 IEC HoloBox</h1>
+  <h1>🔮 Dugong</h1>
+
+  <h3>The Embodied K2 Agent for Physical and Digital Spaces</h3>
 
   <a href="https://meetdugong.live">
-    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=%E2%9C%A8+Holographic+AI+Character+Runtime;%F0%9F%8E%AC+Real-time+video+orchestration+for+MBZUAI" alt="Typing SVG" />
+    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=%E2%9C%A8+Spatial+interface+generation+from+AI+reasoning;%F0%9F%8E%AC+Embodied+intelligence+for+MBZUAI" alt="Typing SVG" />
   </a>
 
   <br/><br/>
@@ -44,7 +46,8 @@
 <summary><strong>Table of Contents 📜</strong></summary>
 
 - [🌟 Overview](#-overview)
-- [🏗️ Architecture](#️-architecture)
+- [🧠 System Architecture](#-system-architecture)
+- [🏗️ HoloBox Web Runtime](#️-holobox-web-runtime)
 - [🎯 Features](#-features)
   - [🎬 Player](#-player)
   - [🎛️ Admin](#️-admin)
@@ -74,7 +77,7 @@
 
 <div align="center">
 
-  > _"Any sufficiently advanced hologram is indistinguishable from magic."_
+  > _"The environment becomes the response."_
 
   ### 🎬 Character Gallery
 
@@ -107,14 +110,16 @@
 
 ## 🌟 Overview
 
-IEC HoloBox drives a holographic display kiosk featuring an AI character — **Dugong** 🐋. A **Player** renders full-screen video with overlay graphics on the display hardware, while an **Admin** panel gives operators real-time control over the character's state machine, overlays, and playback queue — all synchronized through WebSocket.
+**Dugong** is an embodied K2-powered agent that transforms foundation model reasoning into dynamically generated spatial interfaces. Unlike traditional AI systems that output text, Dugong converts reasoning, planning, and agent execution into real-time environment synthesis across physical (HoloBox) and digital (web/mobile) platforms.
 
-The system is built for a physical installation at **MBZUAI** (Mohamed bin Zayed University of Artificial Intelligence) and is designed for:
+> **Dugong does not merely respond. It constructs.**
 
-- ⚡ **Zero-latency transitions** between character states
-- 🔄 **Seamless looping** with dual video buffer architecture
-- 🎭 **HUD aesthetic** that complements the holographic medium
-- 🎛️ **Operator-friendly controls** for live demonstrations
+The system introduces a new output modality for foundation models:
+- From **language** → to **space**
+- From **response** → to **construction**
+- From **interface** → to **environment**
+
+Built for **MBZUAI** (Mohamed bin Zayed University of Artificial Intelligence), Dugong is deployed as an embodied AI character on a holographic display kiosk — with the environment itself serving as the primary output surface for intelligence.
 
 <p align="center">
   <img src="docs/admin-preview.gif" alt="Admin Panel" width="100%" />
@@ -122,11 +127,47 @@ The system is built for a physical installation at **MBZUAI** (Mohamed bin Zayed
 
 ---
 
-## 🏗️ Architecture
+## 🧠 System Architecture
+
+Dugong operates as a **runtime interface compiler** that translates natural language intent, contextual memory, and agent tool outputs into scene graphs, dynamic UI components, and interactive spatial elements.
+
+| Layer | Component | Responsibility |
+|-------|-----------|----------------|
+| **Intelligence** | **K2 Think V2** | Multi-step reasoning, task decomposition, structured planning, visualization intent (JSON scene plans, action graphs) |
+| **Intelligence** | **K2 V2** | Conversational synthesis, contextual explanation, narrative alignment with spatial outputs |
+| **Orchestration** | **OpenClaw** | Stateful sessions, tool routing, plan execution, scene command dispatch, agent workflow management |
+| **Scene Control** | **HoloBox Web Runtime** | Scene graph interpretation, runtime object rendering, data-driven UI components, animated state transitions |
+
+```
+User → Intent → K2 Think (Reasoning Plan) → OpenClaw (Agent Execution) → Scene Synthesis
+```
+
+Agent operations map directly to spatial transformations:
+
+| Agent Operation | Spatial Result |
+|-----------------|----------------|
+| Plan Step | Object Instantiation |
+| Tool Output | Data Panel Render |
+| State Update | Scene Transition |
+| Simulation | Animated Environment |
+| Analysis Result | Visual Breakdown |
+
+The avatar is the embodiment layer — the spatial reasoning engine is the product.
 
 <p align="center">
-  <img src="docs/schemes/architecture.png" alt="IEC HoloBox Architecture" width="100%" />
+  <img src="docs/schemes/architecture.png" alt="Dugong Architecture" width="100%" />
 </p>
+
+---
+
+## 🏗️ HoloBox Web Runtime
+
+The HoloBox Web Runtime is Dugong's **Scene Control Layer** for physical deployment. A **Player** renders full-screen video with overlay graphics on the holographic display hardware, while an **Admin** panel gives operators real-time control over the character's state machine, overlays, and playback queue — all synchronized through WebSocket.
+
+- ⚡ **Zero-latency transitions** between character states
+- 🔄 **Seamless looping** with dual video buffer architecture
+- 🎭 **HUD aesthetic** that complements the holographic medium
+- 🎛️ **Operator-friendly controls** for live demonstrations
 
 ---
 
@@ -464,6 +505,8 @@ The player UI follows a **glassmorphism / HUD** aesthetic designed to complement
 ---
 
 <div align="center">
+
+**Dugong** — Embodied K2 Agent for Physical and Digital Spaces
 
 Made with 💙 and mass amounts of ☕ for **MBZUAI**
 
