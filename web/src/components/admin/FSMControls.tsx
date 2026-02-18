@@ -321,7 +321,7 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
       {/* ── Debug Info Panel ── */}
       <div className="bg-glass-light border border-glass-border rounded-xl p-3 space-y-2">
         {/* Current / Previous / Pending row */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 sm:grid sm:grid-cols-3 sm:gap-2">
           <div>
             <div className="text-[9px] uppercase tracking-wider text-gray-500 mb-1">Current</div>
             <StateBadge state={currentState} />
@@ -350,18 +350,18 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
         )}
 
         {/* Stats row */}
-        <div className="flex items-center gap-3 text-[10px] text-gray-500 font-mono pt-1 border-t border-glass-border">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-gray-500 font-mono pt-1 border-t border-glass-border">
           <span title="Total transitions this session">
             transitions: <span className="text-gray-300">{transitionCount}</span>
           </span>
-          <span className="text-gray-700">|</span>
+          <span className="text-gray-700 hidden sm:inline">|</span>
           <span title="Clips queued">
             queue: <span className="text-gray-300">{queueLength}</span>
           </span>
           {currentClip && (
             <>
-              <span className="text-gray-700">|</span>
-              <span title="Currently playing clip" className="truncate max-w-[140px]">
+              <span className="text-gray-700 hidden sm:inline">|</span>
+              <span title="Currently playing clip" className="truncate max-w-[60vw] sm:max-w-[140px]">
                 clip: <span className="text-gray-300">{currentClip.split('/').pop()}</span>
               </span>
             </>
@@ -392,19 +392,19 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
         {playerQueueItems.length > 0 ? (
           <div className="space-y-1">
             {playerQueueItems.map((item, i) => (
-              <div key={i} className="text-[10px] font-mono text-gray-400 flex items-center gap-1">
+              <div key={i} className="text-[10px] font-mono text-gray-400 flex flex-wrap items-center gap-1">
                 <span className="text-gray-600">[{i}]</span>
                 {item.bridge && (
                   <>
                     <span className="text-cyan-400/70">bridge:</span>
-                    <span className="text-gray-300 truncate max-w-[100px]">{item.bridge.split('/').pop()}</span>
+                    <span className="text-gray-300 truncate max-w-[40vw] sm:max-w-[100px]">{item.bridge.split('/').pop()}</span>
                   </>
                 )}
                 {item.bridge && item.target && <span className="text-gray-600">→</span>}
                 {item.target && (
                   <>
                     <span className="text-purple-400/70">target:</span>
-                    <span className="text-gray-300 truncate max-w-[100px]">{item.target.split('/').pop()}</span>
+                    <span className="text-gray-300 truncate max-w-[40vw] sm:max-w-[100px]">{item.target.split('/').pop()}</span>
                   </>
                 )}
               </div>
@@ -425,10 +425,10 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
       )}
 
       {/* ── State Machine Graph + Action Buttons ── */}
-      <div className="flex gap-1.5 items-start">
+      <div className="flex flex-col md:flex-row gap-1.5 items-start">
       <svg
         viewBox="0 0 400 440"
-        className="w-[60%]"
+        className="w-full md:w-[60%]"
         style={{ filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.05))' }}
       >
         <defs>
@@ -956,7 +956,7 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
         {/* Quick state buttons */}
         <div className="bg-glass-light border border-glass-border rounded-lg px-2.5 py-2">
           <div className="text-[8px] uppercase tracking-wider text-gray-500 mb-1.5">Quick Transition</div>
-          <div className="grid grid-cols-2 gap-1">
+          <div className="grid grid-cols-3 sm:grid-cols-2 gap-1.5 sm:gap-1">
             {(['GREET', 'LISTEN', 'THINK', 'SPEAK', 'SHOW'] as FSMState[]).map((state) => {
               const cfg = STATE_CONFIG[state];
               const key = SHORTCUT_KEYS[state];
@@ -966,7 +966,7 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
                 <button
                   key={state}
                   onClick={() => handleClick(state)}
-                  className="relative flex items-center gap-1 px-1.5 py-1 rounded text-[9px] font-bold border transition-all hover:scale-[1.03] active:scale-100"
+                  className="relative flex items-center gap-1 px-1.5 py-2 sm:py-1 rounded text-[10px] sm:text-[9px] font-bold border transition-all hover:scale-[1.03] active:scale-100"
                   style={{
                     backgroundColor: isActive ? cfg.fillActive : cfg.fillBase,
                     borderColor: isActive ? cfg.strokeActive : cfg.strokeBase,

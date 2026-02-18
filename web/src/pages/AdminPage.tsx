@@ -8,17 +8,18 @@ import EventLog from '../components/admin/EventLog';
 
 type Tab = 'general' | 'fsm' | 'overlays' | 'logs';
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'general', label: '📡 Live Status' },
-  { key: 'fsm', label: '🎭 Character Behavior' },
-  { key: 'overlays', label: '🎨 Stage Visuals' },
-  { key: 'logs', label: '📜 Activity Stream' },
+const TABS: { key: Tab; label: string; shortLabel: string }[] = [
+  { key: 'general', label: '📡 Live Status', shortLabel: '📡 Status' },
+  { key: 'fsm', label: '🎭 Character Behavior', shortLabel: '🎭 FSM' },
+  { key: 'overlays', label: '🎨 Stage Visuals', shortLabel: '🎨 Visuals' },
+  { key: 'logs', label: '📜 Activity Stream', shortLabel: '📜 Logs' },
 ];
 
 export default function AdminPage() {
   const { send } = useWebSocket();
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('general');
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleSend = useCallback((event: ControlEvent) => {
     send(event);
@@ -51,10 +52,19 @@ export default function AdminPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [send]);
 
+  const handleTabClick = (key: Tab) => {
+    if (activeTab === key && sheetOpen) {
+      setSheetOpen(false);
+    } else {
+      setActiveTab(key);
+      setSheetOpen(true);
+    }
+  };
+
   return (
-    <div className="h-screen w-screen grid grid-cols-2 bg-gray-950">
+    <div className="h-screen w-screen md:grid md:grid-cols-2 bg-gray-950 relative">
       {/* Left: Player Preview */}
-      <div className="relative flex items-center justify-center bg-black border-r border-glass-border">
+      <div className="absolute inset-0 md:relative flex items-center justify-center bg-black md:border-r md:border-glass-border">
         {!iframeLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-gray-500 text-sm animate-pulse">✨ Loading Player...</div>
@@ -80,9 +90,28 @@ export default function AdminPage() {
         </a>
       </div>
 
-      {/* Right: Admin Panel */}
-      <div className="admin-bg flex flex-col p-5 overflow-hidden">
-        <div className="flex items-center justify-between px-1 mb-4">
+      {/* Right: Admin Panel — bottom sheet on mobile */}
+      <div
+        className={`
+          fixed inset-x-0 bottom-0 z-50 h-[85vh] rounded-t-2xl
+          md:relative md:z-auto md:h-auto md:rounded-none
+          admin-bg flex flex-col overflow-hidden
+          transition-transform duration-300 ease-out
+          md:translate-y-0
+          ${sheetOpen ? 'translate-y-0' : 'translate-y-[calc(100%-3.5rem)]'}
+        `}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      >
+        {/* Drag handle — mobile only */}
+        <div
+          className="md:hidden flex justify-center pt-2 pb-1 cursor-pointer"
+          onClick={() => setSheetOpen((o) => !o)}
+        >
+          <div className="w-10 h-1 rounded-full bg-white/20" />
+        </div>
+
+        {/* Title bar — desktop only */}
+        <div className="hidden md:flex items-center justify-between px-6 pt-5 pb-4">
           <h1 className="shimmer-text text-lg font-bold tracking-wide">
             ✦ HoloBox Control ✦
           </h1>
@@ -90,20 +119,21 @@ export default function AdminPage() {
         </div>
 
         {/* Tab bar */}
-        <div className="flex gap-1 px-1">
-          {TABS.map(({ key, label }) => (
+        <div className="flex gap-1 px-2 md:px-6">
+          {TABS.map(({ key, label, shortLabel }) => (
             <button
               key={key}
-              onClick={() => setActiveTab(key)}
-              className={`glass-tab ${activeTab === key ? 'glass-tab-active' : ''}`}
+              onClick={() => handleTabClick(key)}
+              className={`glass-tab flex-1 md:flex-none truncate ${activeTab === key ? 'glass-tab-active' : ''}`}
             >
-              {label}
+              <span className="md:hidden">{shortLabel}</span>
+              <span className="hidden md:inline">{label}</span>
             </button>
           ))}
         </div>
 
         {/* Tab content */}
-        <div className="glass-card flex-1 min-h-0 overflow-y-auto p-4 rounded-t-none glass-scroll flex flex-col">
+        <div className="glass-card flex-1 min-h-0 overflow-y-auto p-2.5 md:p-4 rounded-t-none glass-scroll flex flex-col mx-2 md:mx-5 mb-2 md:mb-5">
           {activeTab === 'general' && <SystemStatus />}
           {activeTab === 'fsm' && <FSMControls onSend={handleSend} />}
           {activeTab === 'overlays' && <OverlayControls onSend={handleSend} />}

@@ -107,7 +107,7 @@ export default function EventLog() {
         {entries.map((entry, i) => (
           <div
             key={entry.id}
-            className={`flex gap-2 leading-relaxed px-2 py-1 rounded-lg transition-all hover:bg-white/[0.07] hover:shadow-[inset_0_0_12px_oklch(1_0_0_/_3%)] ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}
+            className={`flex flex-wrap gap-x-2 gap-y-0.5 leading-relaxed px-2 py-1 rounded-lg transition-all hover:bg-white/[0.07] hover:shadow-[inset_0_0_12px_oklch(1_0_0_/_3%)] ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}
           >
             <span className="text-gray-600 shrink-0">{formatTime(entry.timestamp)}</span>
             <span className="shrink-0 text-[10px]">{TYPE_EMOJI[entry.event.type] ?? '❓'}</span>
@@ -117,7 +117,7 @@ export default function EventLog() {
             <span className={`shrink-0 ${TYPE_COLORS[entry.event.type] ?? 'text-gray-300'}`}>
               {entry.event.type}
             </span>
-            <span className="text-gray-400 truncate">{summarize(entry)}</span>
+            <span className="text-gray-400 break-all min-w-0">{summarize(entry)}</span>
           </div>
         ))}
         {entries.length === 0 && (

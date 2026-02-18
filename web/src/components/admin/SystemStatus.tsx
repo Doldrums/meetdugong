@@ -21,7 +21,7 @@ export default function SystemStatus() {
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-2 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
         <StatusBadge
           label="🖥️ Orchestrator"
           value={orchestratorOnline ? 'Online' : 'Offline'}
@@ -32,14 +32,14 @@ export default function SystemStatus() {
           value={wsConnected ? 'Connected' : 'Disconnected'}
           ok={wsConnected}
         />
-        <div className="col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
+        <div className="sm:col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
           <span className="text-gray-400">🎯 FSM State</span>
           <span className="font-mono font-bold text-white flex items-center gap-1.5">
             <span>{STATE_EMOJI[currentState] ?? '❓'}</span>
             <span>{currentState}</span>
           </span>
         </div>
-        <div className="col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
+        <div className="sm:col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
           <span className="text-gray-400">🎞️ Clip</span>
           <span className="font-mono text-gray-300 truncate ml-2 max-w-48">
             {currentClip ? currentClip.split('/').pop() : '—'}
@@ -50,7 +50,7 @@ export default function SystemStatus() {
           <span className="text-gray-300 font-mono">{queueLength}</span>
         </div>
         {lastError && (
-          <div className="col-span-2 bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-3 py-2 text-xs shadow-glow-red flex items-center gap-2">
+          <div className="sm:col-span-2 bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-3 py-2 text-xs shadow-glow-red flex items-center gap-2">
             <span className="text-sm">🚨</span>
             <span className="truncate">{lastError}</span>
           </div>
