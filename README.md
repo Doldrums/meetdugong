@@ -116,6 +116,10 @@ The system is built for a physical installation at **MBZUAI** (Mohamed bin Zayed
 - 🎭 **HUD aesthetic** that complements the holographic medium
 - 🎛️ **Operator-friendly controls** for live demonstrations
 
+<p align="center">
+  <img src="docs/admin-screenshot.png" alt="Admin Panel" width="100%" />
+</p>
+
 ---
 
 ## 🏗️ Architecture
