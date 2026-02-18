@@ -8,6 +8,19 @@
 
 <br/>
 
+[![🌐 Production](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live&style=for-the-badge&logo=caddy&logoColor=white&label=meetdugong.live&up_message=online&down_message=offline&up_color=00C853&down_color=FF1744)](https://meetdugong.live)
+[![🏥 Health Check](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live%2Fstatus&style=for-the-badge&logo=checkmarx&logoColor=white&label=health&up_message=healthy&down_message=down&up_color=00C853&down_color=FF1744)](https://meetdugong.live/status)
+
+| | Link | Description |
+|---|------|-------------|
+| 🌐 | [**meetdugong.live**](https://meetdugong.live) | 🟢 Production — Admin Panel |
+| 🎬 | [**meetdugong.live/player**](https://meetdugong.live/player) | 🖥️ Full-screen Holographic Player |
+| 🔍 | [**meetdugong.live/player?debug=1**](https://meetdugong.live/player?debug=1) | 🐛 Player with Debug HUD |
+| 📡 | [**meetdugong.live/status**](https://meetdugong.live/status) | 💚 API Health Check |
+| 📋 | [**meetdugong.live/manifest**](https://meetdugong.live/manifest) | 🎬 Clip Manifest JSON |
+
+<br/>
+
 <img src="https://img.shields.io/badge/⚛_React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React 19" />
 <img src="https://img.shields.io/badge/🚀_Express-5-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express 5" />
 <img src="https://img.shields.io/badge/💎_TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
