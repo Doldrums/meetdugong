@@ -1,48 +1,82 @@
-<div align="center">
-
-# 🔮 IEC HoloBox
-
-### ✨ _Holographic AI Character Runtime & Operator Control Panel_ ✨
-
-🎬 Real-time video orchestration for the **MBZUAI** interactive kiosk
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0A0A0A,50:06B6D4,100:0A0A0A&height=220&section=header&text=🔮%20IEC%20HoloBox&fontSize=50&fontColor=FFFFFF&fontAlignY=35&desc=Holographic%20AI%20Character%20Runtime%20%26%20Operator%20Control%20Panel&descSize=16&descColor=67E8F9&descAlignY=55&animation=fadeIn" width="100%" />
 
 <br/>
 
-[![🌐 Production](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live&style=for-the-badge&logo=caddy&logoColor=white&label=meetdugong.live&up_message=online&down_message=offline&up_color=00C853&down_color=FF1744)](https://meetdugong.live)
-[![🏥 Health Check](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live%2Fstatus&style=for-the-badge&logo=checkmarx&logoColor=white&label=health&up_message=healthy&down_message=down&up_color=00C853&down_color=FF1744)](https://meetdugong.live/status)
-
-| | Link | Description |
-|---|------|-------------|
-| 🌐 | [**meetdugong.live**](https://meetdugong.live) | 🟢 Production — Admin Panel |
-| 🎬 | [**meetdugong.live/player**](https://meetdugong.live/player) | 🖥️ Full-screen Holographic Player |
-| 🔍 | [**meetdugong.live/player?debug=1**](https://meetdugong.live/player?debug=1) | 🐛 Player with Debug HUD |
-| 📡 | [**meetdugong.live/status**](https://meetdugong.live/status) | 💚 API Health Check |
-| 📋 | [**meetdugong.live/manifest**](https://meetdugong.live/manifest) | 🎬 Clip Manifest JSON |
-
-<br/>
-
-<a href="https://skillicons.dev">
-  <img src="https://skillicons.dev/icons?i=react,express,ts,tailwind,vite,docker,nodejs,pnpm&theme=dark" alt="Tech Stack" />
+<a href="https://meetdugong.live">
+  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=🎬+Real-time+video+orchestration;🐋+for+the+MBZUAI+interactive+kiosk" alt="Typing SVG" />
 </a>
+
+<br/>
+
+[![🌐 Production](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live&style=for-the-badge&logo=caddy&logoColor=0A0A0A&label=meetdugong.live&up_message=online&down_message=offline&up_color=06B6D4&down_color=FF1744)](https://meetdugong.live)
+&nbsp;
+[![🏥 Health](https://img.shields.io/website?url=https%3A%2F%2Fmeetdugong.live%2Fstatus&style=for-the-badge&logo=checkmarx&logoColor=0A0A0A&label=health&up_message=healthy&down_message=down&up_color=14B8A6&down_color=FF1744)](https://meetdugong.live/status)
 
 <br/>
 
 <table>
   <tr>
-    <td align="center"><strong>⚛️</strong><br/><sub>React 19</sub></td>
-    <td align="center"><strong>🚀</strong><br/><sub>Express 5</sub></td>
-    <td align="center"><strong>💎</strong><br/><sub>TypeScript 5.8</sub></td>
-    <td align="center"><strong>🎨</strong><br/><sub>Tailwind 4</sub></td>
-    <td align="center"><strong>⚡</strong><br/><sub>Vite 6</sub></td>
-    <td align="center"><strong>🐻</strong><br/><sub>Zustand 5</sub></td>
-    <td align="center"><strong>🔌</strong><br/><sub>WebSocket</sub></td>
-    <td align="center"><strong>🐳</strong><br/><sub>Docker</sub></td>
-    <td align="center"><strong>🔒</strong><br/><sub>Caddy 2</sub></td>
-    <td align="center"><strong>📦</strong><br/><sub>pnpm</sub></td>
+    <td align="center">🌐</td>
+    <td><a href="https://meetdugong.live"><b>meetdugong.live</b></a></td>
+    <td>🟢 Production — Admin Panel</td>
+  </tr>
+  <tr>
+    <td align="center">🎬</td>
+    <td><a href="https://meetdugong.live/player"><b>meetdugong.live/player</b></a></td>
+    <td>🖥️ Holographic Player</td>
+  </tr>
+  <tr>
+    <td align="center">🔍</td>
+    <td><a href="https://meetdugong.live/player?debug=1"><b>meetdugong.live/player?debug=1</b></a></td>
+    <td>🐛 Player + Debug HUD</td>
+  </tr>
+  <tr>
+    <td align="center">📡</td>
+    <td><a href="https://meetdugong.live/status"><b>meetdugong.live/status</b></a></td>
+    <td>💚 API Health Check</td>
+  </tr>
+  <tr>
+    <td align="center">📋</td>
+    <td><a href="https://meetdugong.live/manifest"><b>meetdugong.live/manifest</b></a></td>
+    <td>🎬 Clip Manifest JSON</td>
   </tr>
 </table>
 
-<br/><br/>
+<br/>
+
+#### `⚡ TECH STACK`
+
+<table>
+  <tr>
+    <td align="center"><b>Frontend</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/React_19-00E5FF?style=flat-square&logo=react&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/TypeScript_5.8-00E5FF?style=flat-square&logo=typescript&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/Tailwind_4-00E5FF?style=flat-square&logo=tailwindcss&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/Vite_6-00E5FF?style=flat-square&logo=vite&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/Zustand_5-00E5FF?style=flat-square&logo=zustand&logoColor=0A0A0A" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>Backend</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/Express_5-14B8A6?style=flat-square&logo=express&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/Node_22-14B8A6?style=flat-square&logo=nodedotjs&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/WebSocket-14B8A6?style=flat-square&logo=socketdotio&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/esbuild-14B8A6?style=flat-square&logo=esbuild&logoColor=0A0A0A" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>Infra</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/Docker-67E8F9?style=flat-square&logo=docker&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/Caddy_2-67E8F9?style=flat-square&logo=caddy&logoColor=0A0A0A" />
+      <img src="https://img.shields.io/badge/pnpm-67E8F9?style=flat-square&logo=pnpm&logoColor=0A0A0A" />
+    </td>
+  </tr>
+</table>
+
+<br/>
 
 [🌟 Overview](#-overview) · [🏗️ Architecture](#️-architecture) · [🎯 Features](#-features) · [🚀 Getting Started](#-getting-started) · [🎬 Content System](#-content-system) · [📡 WebSocket Protocol](#-websocket-protocol) · [🌐 Deployment](#-deployment)
 
@@ -460,20 +494,10 @@ The player UI follows a **glassmorphism / HUD** aesthetic designed to complement
 
 <br/>
 
-```
-    ╔══════════════════════════════════════════════╗
-    ║                                              ║
-    ║   🔮  B U I L T   F O R   M B Z U A I  🔮   ║
-    ║                                              ║
-    ║        Powered by holographic magic ✨        ║
-    ║                                              ║
-    ╚══════════════════════════════════════════════╝
-```
-
-<br/>
-
-Made with 💙 and mass amounts of ☕
+Made with 💙 and mass amounts of ☕ for **MBZUAI**
 
 <br/>
 
 </div>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0A0A0A,50:06B6D4,100:0A0A0A&height=120&section=footer" width="100%" />
