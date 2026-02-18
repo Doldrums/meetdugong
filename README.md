@@ -1,10 +1,16 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0A0A0A,50:06B6D4,100:0A0A0A&height=220&section=header&text=🔮%20IEC%20HoloBox&fontSize=50&fontColor=FFFFFF&fontAlignY=35&desc=Holographic%20AI%20Character%20Runtime%20%26%20Operator%20Control%20Panel&descSize=16&descColor=67E8F9&descAlignY=55&animation=fadeIn" width="100%" />
+<div align="center">
+  <a href="https://github.com/Doldrums/meetdugong">
+    <img src="https://github.com/Doldrums/meetdugong/blob/main/docs/logo.svg?raw=true" alt="IEC HoloBox" height="180">
+  </a>
+</div>
 
-<br/>
+<h1 align="center">🔮 IEC HoloBox</h1>
 
-<a href="https://meetdugong.live">
-  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=🎬+Real-time+video+orchestration;🐋+for+the+MBZUAI+interactive+kiosk" alt="Typing SVG" />
-</a>
+<div align="center">
+  <a href="https://meetdugong.live">
+    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=✨+Holographic+AI+Character+Runtime;🎬+Real-time+video+orchestration+for+MBZUAI" alt="Typing SVG" />
+  </a>
+</div>
 
 <br/>
 
