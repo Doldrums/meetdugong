@@ -6,7 +6,7 @@
   <h1>🔮 IEC HoloBox</h1>
 
   <a href="https://meetdugong.live">
-    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=✨+Holographic+AI+Character+Runtime;🎬+Real-time+video+orchestration+for+MBZUAI" alt="Typing SVG" />
+    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&duration=3000&pause=1000&color=06B6D4&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=60&lines=%E2%9C%A8+Holographic+AI+Character+Runtime;%F0%9F%8E%AC+Real-time+video+orchestration+for+MBZUAI" alt="Typing SVG" />
   </a>
 
   <br/><br/>
