@@ -2,40 +2,40 @@ import { useEffect, useRef } from 'react';
 import { useLogStore } from '../../stores/logStore';
 import type { LogEntry } from '@shared/types';
 
-const TYPE_EMOJI: Record<string, string> = {
-  'status': '📊',
-  'fsm.transition': '🔀',
-  'fsm.manual': '🎯',
-  'fsm.reset': '🔄',
-  'playback.started': '▶️',
-  'playback.ended': '⏹️',
-  'overlay.applied': '🎨',
-  'overlay.subtitle.set': '💬',
-  'overlay.subtitle.clear': '🧹',
-  'overlay.card.show': '🃏',
-  'overlay.card.hide': '🙈',
-  'overlay.clearAll': '💥',
-  'overlay.qr.show': '📱',
-  'overlay.qr.hide': '🙈',
-  'error': '🚨',
+const TYPE_DOT_COLORS: Record<string, string> = {
+  'status': '#8E8E93',
+  'fsm.transition': '#007AFF',
+  'fsm.manual': '#5AC8FA',
+  'fsm.reset': '#FF9500',
+  'playback.started': '#34C759',
+  'playback.ended': '#30D158',
+  'overlay.applied': '#AF52DE',
+  'overlay.subtitle.set': '#BF5AF2',
+  'overlay.subtitle.clear': '#BF5AF2',
+  'overlay.card.show': '#BF5AF2',
+  'overlay.card.hide': '#BF5AF2',
+  'overlay.clearAll': '#BF5AF2',
+  'overlay.qr.show': '#BF5AF2',
+  'overlay.qr.hide': '#BF5AF2',
+  'error': '#FF3B30',
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  'status': 'text-gray-400',
-  'fsm.transition': 'text-cyan-400',
-  'fsm.manual': 'text-cyan-300',
-  'fsm.reset': 'text-yellow-400',
-  'playback.started': 'text-green-400',
-  'playback.ended': 'text-green-300',
-  'overlay.applied': 'text-purple-400',
-  'overlay.subtitle.set': 'text-purple-300',
-  'overlay.subtitle.clear': 'text-purple-300',
-  'overlay.card.show': 'text-purple-300',
-  'overlay.card.hide': 'text-purple-300',
-  'overlay.clearAll': 'text-purple-300',
-  'overlay.qr.show': 'text-purple-300',
-  'overlay.qr.hide': 'text-purple-300',
-  'error': 'text-red-400',
+  'status': 'text-white/35',
+  'fsm.transition': 'text-[#007AFF]',
+  'fsm.manual': 'text-[#5AC8FA]',
+  'fsm.reset': 'text-[#FF9500]',
+  'playback.started': 'text-[#34C759]',
+  'playback.ended': 'text-[#30D158]',
+  'overlay.applied': 'text-[#AF52DE]',
+  'overlay.subtitle.set': 'text-[#BF5AF2]',
+  'overlay.subtitle.clear': 'text-[#BF5AF2]',
+  'overlay.card.show': 'text-[#BF5AF2]',
+  'overlay.card.hide': 'text-[#BF5AF2]',
+  'overlay.clearAll': 'text-[#BF5AF2]',
+  'overlay.qr.show': 'text-[#BF5AF2]',
+  'overlay.qr.hide': 'text-[#BF5AF2]',
+  'error': 'text-[#FF3B30]',
 };
 
 function formatTime(ts: number): string {
@@ -81,22 +81,29 @@ export default function EventLog() {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
+      {/* Section intro */}
+      <div className="mb-2">
+        <h3 className="section-header">Activity Log</h3>
+        <p className="text-[11px] text-white/20 mt-1 leading-relaxed">
+          Real-time stream of agent actions, scene transitions, and overlay commands dispatched through OpenClaw.
+        </p>
+      </div>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-gray-500">
-          {entries.length === 0 ? '🕳️ empty' : `${entries.length} event${entries.length !== 1 ? 's' : ''}`}
+        <span className="text-xs text-white/30">
+          {entries.length === 0 ? 'No events' : `${entries.length} event${entries.length !== 1 ? 's' : ''}`}
         </span>
         <div className="flex gap-3 text-xs">
-          <label className="flex items-center gap-1 text-gray-400 cursor-pointer hover:text-gray-300 transition-colors">
+          <label className="flex items-center gap-1 text-white/35 cursor-pointer hover:text-white/55 transition-colors">
             <input
               type="checkbox"
               checked={autoScroll}
               onChange={(e) => setAutoScroll(e.target.checked)}
               className="rounded"
             />
-            📌 Auto-scroll
+            Auto-scroll
           </label>
-          <button onClick={clear} className="text-gray-500 hover:text-gray-300 transition-colors">
-            🗑️ Clear
+          <button onClick={clear} className="text-white/30 hover:text-white/55 transition-colors">
+            Clear
           </button>
         </div>
       </div>
@@ -107,23 +114,26 @@ export default function EventLog() {
         {entries.map((entry, i) => (
           <div
             key={entry.id}
-            className={`flex flex-wrap gap-x-2 gap-y-0.5 leading-relaxed px-2 py-1 rounded-lg transition-all hover:bg-white/[0.07] hover:shadow-[inset_0_0_12px_oklch(1_0_0_/_3%)] ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}
+            className={`flex flex-wrap gap-x-2 gap-y-0.5 leading-relaxed px-2 py-1 rounded-lg transition-all hover:bg-white/[0.05] ${i !== 0 ? 'border-t border-white/[0.04]' : ''}`}
           >
-            <span className="text-gray-600 shrink-0">{formatTime(entry.timestamp)}</span>
-            <span className="shrink-0 text-[10px]">{TYPE_EMOJI[entry.event.type] ?? '❓'}</span>
-            <span className={`shrink-0 font-semibold ${entry.direction === 'outbound' ? 'text-accent-cyan' : 'text-accent-blue'}`}>
-              {entry.direction === 'outbound' ? '⬆' : '⬇'}
+            <span className="text-white/25 shrink-0">{formatTime(entry.timestamp)}</span>
+            <span
+              className="shrink-0 inline-block w-1.5 h-1.5 rounded-full mt-1.5"
+              style={{ backgroundColor: TYPE_DOT_COLORS[entry.event.type] ?? '#8E8E93' }}
+            />
+            <span className={`shrink-0 font-semibold ${entry.direction === 'outbound' ? 'text-[#007AFF]' : 'text-[#5856D6]'}`}>
+              {entry.direction === 'outbound' ? '↑' : '↓'}
             </span>
-            <span className={`shrink-0 ${TYPE_COLORS[entry.event.type] ?? 'text-gray-300'}`}>
+            <span className={`shrink-0 ${TYPE_COLORS[entry.event.type] ?? 'text-white/50'}`}>
               {entry.event.type}
             </span>
-            <span className="text-gray-400 break-all min-w-0">{summarize(entry)}</span>
+            <span className="text-white/40 break-all min-w-0">{summarize(entry)}</span>
           </div>
         ))}
         {entries.length === 0 && (
-          <div className="text-gray-600 text-center py-8 space-y-1">
-            <div className="text-2xl" style={{ animation: 'float 3s ease-in-out infinite' }}>👻</div>
-            <div>No events yet — trigger something!</div>
+          <div className="text-white/25 text-center py-8">
+            <div>No events yet</div>
+            <div className="text-[11px] text-white/15 mt-1">Trigger a state transition or send an overlay to see events here</div>
           </div>
         )}
       </div>

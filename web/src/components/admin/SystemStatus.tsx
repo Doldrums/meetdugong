@@ -1,16 +1,5 @@
 import { useAppStore } from '../../stores/appStore';
 
-const STATE_EMOJI: Record<string, string> = {
-  IDLE: '😴',
-  AWARE: '👀',
-  GREET: '👋',
-  LISTEN: '👂',
-  THINK: '🧠',
-  SPEAK: '🗣️',
-  SHOW: '🎬',
-  GOODBYE: '👋',
-};
-
 export default function SystemStatus() {
   const wsConnected = useAppStore((s) => s.wsConnected);
   const orchestratorOnline = useAppStore((s) => s.orchestratorOnline);
@@ -20,38 +9,53 @@ export default function SystemStatus() {
   const lastError = useAppStore((s) => s.lastError);
 
   return (
-    <div>
+    <div className="space-y-3">
+      {/* Section intro */}
+      <div>
+        <h3 className="section-header">System Health</h3>
+        <p className="text-[11px] text-white/25 mt-1 leading-relaxed">
+          Real-time connection status and agent runtime state. OpenClaw orchestrates tool routing, plan execution, and scene command dispatch.
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
         <StatusBadge
-          label="🖥️ Orchestrator"
+          label="OpenClaw"
           value={orchestratorOnline ? 'Online' : 'Offline'}
           ok={orchestratorOnline}
         />
         <StatusBadge
-          label="🔌 WebSocket"
+          label="WebSocket"
           value={wsConnected ? 'Connected' : 'Disconnected'}
           ok={wsConnected}
         />
-        <div className="sm:col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
-          <span className="text-gray-400">🎯 FSM State</span>
-          <span className="font-mono font-bold text-white flex items-center gap-1.5">
-            <span>{STATE_EMOJI[currentState] ?? '❓'}</span>
-            <span>{currentState}</span>
+        {/* Agent state */}
+        <div className="sm:col-span-2 mt-1 mb-0.5">
+          <span className="text-[10px] text-white/20 uppercase tracking-wider font-medium">Agent State</span>
+        </div>
+        <div className="sm:col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2.5">
+          <span className="text-white/40 text-xs">FSM State</span>
+          <span className="font-mono font-bold text-white">
+            {currentState}
           </span>
         </div>
-        <div className="sm:col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
-          <span className="text-gray-400">🎞️ Clip</span>
-          <span className="font-mono text-gray-300 truncate ml-2 max-w-48">
+        <div className="sm:col-span-2 flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2.5">
+          <span className="text-white/40 text-xs">Clip</span>
+          <span className="font-mono text-white/70 truncate ml-2 max-w-48 text-xs">
             {currentClip ? currentClip.split('/').pop() : '—'}
           </span>
         </div>
-        <div className="flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
-          <span className="text-gray-400">📦 Queue</span>
-          <span className="text-gray-300 font-mono">{queueLength}</span>
+        {/* Playback */}
+        <div className="sm:col-span-2 mt-1 mb-0.5">
+          <span className="text-[10px] text-white/20 uppercase tracking-wider font-medium">Playback</span>
+        </div>
+        <div className="flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2.5">
+          <span className="text-white/40 text-xs">Queue</span>
+          <span className="text-white/70 font-mono text-xs">{queueLength}</span>
         </div>
         {lastError && (
-          <div className="sm:col-span-2 bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-3 py-2 text-xs shadow-glow-red flex items-center gap-2">
-            <span className="text-sm">🚨</span>
+          <div className="sm:col-span-2 bg-[#FF3B30]/10 border border-[#FF3B30]/20 text-[#FF6961] rounded-xl px-3 py-2.5 text-xs flex items-center gap-2">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF3B30]" />
             <span className="truncate">{lastError}</span>
           </div>
         )}
@@ -62,11 +66,11 @@ export default function SystemStatus() {
 
 function StatusBadge({ label, value, ok }: { label: string; value: string; ok: boolean }) {
   return (
-    <div className="flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2 shadow-glass-inset">
-      <span className="text-gray-400">{label}</span>
+    <div className="flex justify-between items-center bg-glass-light border border-glass-border rounded-xl px-3 py-2.5">
+      <span className="text-white/40 text-xs">{label}</span>
       <span className="flex items-center gap-1.5">
         <span className={`inline-block ${ok ? 'status-dot-ok' : 'status-dot-err'}`} />
-        <span className={ok ? 'text-green-300' : 'text-red-300'}>{value}</span>
+        <span className={`text-xs ${ok ? 'text-[#34C759]' : 'text-[#FF6961]'}`}>{value}</span>
       </span>
     </div>
   );

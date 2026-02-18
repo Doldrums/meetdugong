@@ -3,16 +3,16 @@ import type { ControlEvent } from '@shared/types';
 import { useWebSocket } from '../hooks/useWebSocket';
 import SystemStatus from '../components/admin/SystemStatus';
 import FSMControls from '../components/admin/FSMControls';
-import OverlayControls from '../components/admin/OverlayControls';
+import StageVisualsTab from '../components/admin/StageVisualsTab';
 import EventLog from '../components/admin/EventLog';
 
 type Tab = 'general' | 'fsm' | 'overlays' | 'logs';
 
 const TABS: { key: Tab; label: string; shortLabel: string }[] = [
-  { key: 'general', label: '📡 Live Status', shortLabel: '📡 Status' },
-  { key: 'fsm', label: '🎭 Character Behavior', shortLabel: '🎭 FSM' },
-  { key: 'overlays', label: '🎨 Stage Visuals', shortLabel: '🎨 Visuals' },
-  { key: 'logs', label: '📜 Activity Stream', shortLabel: '📜 Logs' },
+  { key: 'general', label: 'Live Status', shortLabel: 'Status' },
+  { key: 'fsm', label: 'Character', shortLabel: 'FSM' },
+  { key: 'overlays', label: 'Stage Visuals', shortLabel: 'Visuals' },
+  { key: 'logs', label: 'Activity', shortLabel: 'Logs' },
 ];
 
 export default function AdminPage() {
@@ -67,26 +67,26 @@ export default function AdminPage() {
       <div className="absolute inset-0 md:relative flex items-center justify-center bg-black md:border-r md:border-glass-border">
         {!iframeLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-gray-500 text-sm animate-pulse">✨ Loading Player...</div>
+            <div className="text-gray-500 text-sm animate-pulse">Loading Player...</div>
           </div>
         )}
         <iframe
           src="/player?mode=preview"
           className="w-full h-full border-0"
-          title="Player Preview"
+          title="Dugong Preview"
           allow="autoplay"
           onLoad={() => setIframeLoaded(true)}
         />
-        <span className="absolute top-3 left-3 glass-badge pointer-events-none">
-          👁️ PREVIEW
+        <span className="absolute top-3 left-3 glass-badge pointer-events-none text-xs font-medium">
+          PREVIEW
         </span>
         <a
           href="/player"
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute top-3 right-3 glass-badge hover:text-white transition-colors"
+          className="absolute top-3 right-3 glass-badge hover:text-white transition-colors text-xs"
         >
-          🔗 Open Fullscreen
+          Open Fullscreen
         </a>
       </div>
 
@@ -111,32 +111,39 @@ export default function AdminPage() {
         </div>
 
         {/* Title bar — desktop only */}
-        <div className="hidden md:flex items-center justify-between px-6 pt-5 pb-4">
-          <h1 className="shimmer-text text-lg font-bold tracking-wide">
-            ✦ HoloBox Control ✦
-          </h1>
-          <span className="text-xs text-gray-600">⌨️ Keyboard shortcuts active</span>
+        <div className="hidden md:block px-6 pt-5 pb-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-white font-semibold text-lg tracking-tight">
+              Dugong Control
+            </h1>
+            <span className="text-xs text-white/30">Keyboard shortcuts active</span>
+          </div>
+          <p className="text-[11px] text-white/30 mt-1 leading-relaxed">
+            Embodied K2 Agent — spatial interface generation for physical and digital surfaces
+          </p>
         </div>
 
-        {/* Tab bar */}
-        <div className="flex gap-1 px-2 md:px-6">
-          {TABS.map(({ key, label, shortLabel }) => (
-            <button
-              key={key}
-              onClick={() => handleTabClick(key)}
-              className={`glass-tab flex-1 md:flex-none truncate ${activeTab === key ? 'glass-tab-active' : ''}`}
-            >
-              <span className="md:hidden">{shortLabel}</span>
-              <span className="hidden md:inline">{label}</span>
-            </button>
-          ))}
+        {/* Segmented tab bar */}
+        <div className="segment-control mx-2 md:mx-6 mb-2">
+          <div className="flex">
+            {TABS.map(({ key, label, shortLabel }) => (
+              <button
+                key={key}
+                onClick={() => handleTabClick(key)}
+                className={`segment-item flex-1 text-center truncate ${activeTab === key ? 'segment-active' : ''}`}
+              >
+                <span className="md:hidden">{shortLabel}</span>
+                <span className="hidden md:inline">{label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tab content */}
         <div className="glass-card flex-1 min-h-0 overflow-y-auto p-2.5 md:p-4 rounded-t-none glass-scroll flex flex-col mx-2 md:mx-5 mb-2 md:mb-5">
           {activeTab === 'general' && <SystemStatus />}
           {activeTab === 'fsm' && <FSMControls onSend={handleSend} />}
-          {activeTab === 'overlays' && <OverlayControls onSend={handleSend} />}
+          {activeTab === 'overlays' && <StageVisualsTab onSend={handleSend} />}
           {activeTab === 'logs' && <EventLog />}
         </div>
       </div>

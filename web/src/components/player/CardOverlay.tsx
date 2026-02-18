@@ -1,151 +1,209 @@
+import { useState, useEffect, useRef } from 'react';
 import { useOverlayStore, type CardOverlayData } from '../../stores/overlayStore';
 import HudPanel from './HudPanel';
+import ParticleBurst from './ParticleBurst';
+
+const SF =
+  '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif';
+
+/** Teal → blue → soft purple tinted glass */
+const CARD_TINT = {
+  background:
+    'linear-gradient(-45deg, rgba(60, 160, 200, 0.22), rgba(80, 100, 220, 0.24), rgba(130, 80, 200, 0.20), rgba(60, 140, 210, 0.22), rgba(100, 80, 220, 0.24))',
+  backgroundSize: '400% 400%',
+  animation: 'mesh-flow 12s ease infinite',
+};
+
+const EXIT_DURATION = 400;
 
 export default function CardOverlay() {
-  const cards = useOverlayStore((s) => s.cards);
+  const storeCards = useOverlayStore((s) => s.cards);
+  const [exitingCards, setExitingCards] = useState(
+    new Map<string, CardOverlayData>(),
+  );
+  const prevRef = useRef(storeCards);
 
-  if (cards.size === 0) return null;
+  useEffect(() => {
+    const prev = prevRef.current;
+    prevRef.current = storeCards;
+
+    // Detect removed cards → move to exiting pool
+    const removed = new Map<string, CardOverlayData>();
+    for (const [id, card] of prev) {
+      if (!storeCards.has(id)) removed.set(id, card);
+    }
+
+    if (removed.size > 0) {
+      setExitingCards((prev) => {
+        const next = new Map(prev);
+        for (const [id, card] of removed) next.set(id, card);
+        return next;
+      });
+
+      // Flush exiting cards after animation completes
+      setTimeout(() => {
+        setExitingCards((prev) => {
+          const next = new Map(prev);
+          for (const id of removed.keys()) next.delete(id);
+          return next;
+        });
+      }, EXIT_DURATION + 50);
+    }
+  }, [storeCards]);
+
+  // Merge: active cards override exiting (if same id reappears)
+  const allCards = new Map<string, { card: CardOverlayData; active: boolean }>();
+  for (const [id, card] of exitingCards) {
+    allCards.set(id, { card, active: false });
+  }
+  for (const [id, card] of storeCards) {
+    allCards.set(id, { card, active: true });
+  }
+
+  if (allCards.size === 0) return null;
 
   return (
     <>
-      {Array.from(cards.values()).map((card) => (
-        <Card key={card.id} card={card} />
+      {Array.from(allCards.entries()).map(([id, { card, active }]) => (
+        <AnimatedCard key={id} card={card} active={active} />
       ))}
     </>
   );
 }
 
-function Card({ card }: { card: CardOverlayData }) {
+// ── Individual Card with enter/exit animation ────────────────
+
+function AnimatedCard({
+  card,
+  active,
+}: {
+  card: CardOverlayData;
+  active: boolean;
+}) {
+  const [particles, setParticles] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const delayRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    clearTimeout(delayRef.current);
+    if (active) {
+      // Immediately trigger particles
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setParticles(true));
+      });
+      // Delay panel reveal so particles arrive first
+      delayRef.current = setTimeout(() => setVisible(true), 250);
+    } else {
+      setVisible(false);
+      setParticles(false);
+    }
+    return () => clearTimeout(delayRef.current);
+  }, [active]);
+
   const isRight = card.position !== 'left';
 
   return (
     <div
       className={`absolute top-[10%] ${isRight ? 'right-[5%]' : 'left-[5%]'} w-[35%] max-w-80`}
     >
-      <HudPanel
-        label="INFO"
-        status="SYS.ACTIVE"
-        scanSpeed={4}
-        className="rounded-xl"
+      {/* Glass panel — delayed reveal */}
+      <div
         style={{
-          border: '1px solid oklch(0.78 0.12 195 / 18%)',
-          backdropFilter: 'blur(28px)',
-          WebkitBackdropFilter: 'blur(28px)',
-          boxShadow:
-            '0 8px 40px oklch(0.78 0.12 195 / 6%), 0 0 1px oklch(0.90 0.05 210 / 40%), inset 0 1px 0 oklch(1 0 0 / 35%)',
+          opacity: visible ? 1 : 0,
+          transform: visible
+            ? 'scale(1) translateY(0)'
+            : 'scale(0.96) translateY(8px)',
+          transition: [
+            `opacity ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+            `transform ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+          ].join(', '),
+          backdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
+          WebkitBackdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
+          borderRadius: 22,
+          overflow: 'hidden',
         }}
       >
-        {/* Image section */}
-        {card.imageUrl && (
-          <div className="relative overflow-hidden rounded-t-[inherit]">
-            <img
-              src={card.imageUrl}
-              alt={card.title}
-              className="w-full h-40 object-cover"
-              style={{ opacity: 0.85 }}
-            />
-            {/* Bottom fade to panel glass */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: 'linear-gradient(to top, oklch(0.96 0.015 200 / 90%) 0%, oklch(0.96 0.015 200 / 30%) 40%, transparent 100%)',
-              }}
-            />
-            {/* Side vignettes */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(90deg, oklch(0.96 0.015 200 / 25%) 0%, transparent 20%, transparent 80%, oklch(0.96 0.015 200 / 25%) 100%)',
-              }}
-            />
-            {/* HUD grid over image */}
-            <div
-              className="absolute inset-0 opacity-[0.05]"
-              style={{
-                backgroundImage:
-                  'linear-gradient(oklch(0.55 0.12 210 / 50%) 1px, transparent 1px), linear-gradient(90deg, oklch(0.55 0.12 210 / 50%) 1px, transparent 1px)',
-                backgroundSize: '20px 20px',
-              }}
-            />
-            {/* Image scan line */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <HudPanel tint={CARD_TINT} style={{ borderRadius: 22 }}>
+          {/* Hero image */}
+          {card.imageUrl && (
+            <div className="relative overflow-hidden rounded-t-[22px]">
+              <img
+                src={card.imageUrl}
+                alt={card.title}
+                className="w-full h-40 object-cover"
+                style={{ opacity: 0.80 }}
+              />
               <div
-                className="absolute left-0 right-0 h-px"
+                className="absolute inset-0"
                 style={{
-                  background: 'oklch(0.72 0.10 190 / 25%)',
-                  animation: 'hud-scan 2s linear infinite',
+                  background: `linear-gradient(
+                    to top,
+                    rgba(80, 120, 200, 0.65) 0%,
+                    rgba(80, 120, 200, 0.25) 40%,
+                    transparent 75%
+                  )`,
                 }}
               />
             </div>
-          </div>
-        )}
-
-        {/* Separator */}
-        <div
-          className="mx-4 h-px"
-          style={{ background: 'linear-gradient(to right, transparent, oklch(0.72 0.10 190 / 20%), transparent)' }}
-        />
-
-        {/* Content */}
-        <div className="p-4 pt-3 space-y-1.5">
-          <h3
-            className="font-bold text-base leading-tight"
-            style={{ color: 'oklch(0.22 0.04 230)' }}
-          >
-            {card.title}
-          </h3>
-          {card.subtitle && (
-            <p className="text-sm" style={{ color: 'oklch(0.45 0.04 220)' }}>
-              {card.subtitle}
-            </p>
           )}
-          {card.price && (
-            <p
-              className="text-xl font-bold tracking-wide"
-              style={{ color: 'oklch(0.45 0.14 195)' }}
+
+          {/* Content */}
+          <div className="px-4 pb-4 pt-3 space-y-1.5" style={{ fontFamily: SF }}>
+            <h3
+              className="font-bold text-base leading-tight"
+              style={{
+                color: 'rgba(255, 255, 255, 0.95)',
+                textShadow: '0 1px 4px rgba(40, 80, 160, 0.35)',
+              }}
             >
-              {card.price}
-            </p>
-          )}
-          {card.cta && (
-            <>
-              <div
-                className="h-px w-2/3"
-                style={{ background: 'linear-gradient(to right, oklch(0.72 0.10 190 / 18%), transparent)' }}
-              />
+              {card.title}
+            </h3>
+
+            {card.subtitle && (
               <p
-                className="text-xs font-semibold uppercase tracking-[0.15em]"
-                style={{ color: 'oklch(0.50 0.12 200)' }}
+                className="text-sm leading-snug"
+                style={{
+                  color: 'rgba(255, 255, 255, 0.65)',
+                  textShadow: '0 1px 3px rgba(40, 80, 160, 0.20)',
+                }}
               >
-                {card.cta}
+                {card.subtitle}
               </p>
-            </>
-          )}
-        </div>
+            )}
 
-        {/* Bottom data bar */}
-        <div className="mx-4 mb-2 flex items-center gap-2 opacity-25">
-          <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, oklch(0.65 0.10 190 / 30%), transparent)' }} />
-          <span
-            className="text-[7px] font-mono tracking-wider"
-            style={{ color: 'oklch(0.50 0.10 200)', animation: 'hud-flicker 4s infinite 2s' }}
-          >
-            DATA.READY
-          </span>
-          <div className="h-px flex-1" style={{ background: 'linear-gradient(to left, oklch(0.65 0.10 190 / 30%), transparent)' }} />
-        </div>
-      </HudPanel>
+            {card.price && (
+              <p
+                className="text-lg font-bold"
+                style={{
+                  color: '#fff',
+                  textShadow: '0 0 12px rgba(255, 255, 255, 0.40)',
+                }}
+              >
+                {card.price}
+              </p>
+            )}
 
-      {/* External particles */}
-      <div
-        className="absolute -top-2 left-[15%] w-1 h-1 rounded-full"
-        style={{ background: 'oklch(0.75 0.12 195 / 30%)', animation: 'hud-pulse 4s ease-in-out 0.5s infinite' }}
-      />
-      <div
-        className="absolute -bottom-2 right-[25%] w-1.5 h-1.5 rounded-full"
-        style={{ background: 'oklch(0.70 0.10 185 / 25%)', animation: 'hud-pulse 3.5s ease-in-out 2s infinite' }}
-      />
+            {card.cta && (
+              <>
+                <div
+                  className="h-px w-full mt-2 mb-1.5"
+                  style={{
+                    background:
+                      'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.25), transparent)',
+                  }}
+                />
+                <p
+                  className="text-xs font-semibold"
+                  style={{ color: 'rgba(255, 255, 255, 0.85)' }}
+                >
+                  {card.cta}
+                </p>
+              </>
+            )}
+          </div>
+        </HudPanel>
+      </div>
+      <ParticleBurst trigger={particles} color="rgba(120, 180, 255, 0.9)" />
     </div>
   );
 }

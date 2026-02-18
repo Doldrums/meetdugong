@@ -4,24 +4,24 @@ import type { ControlEvent } from '@shared/types';
 // ── Preset Data ─────────────────────────────────────────────
 
 const SUBTITLE_PRESETS = [
-  { key: 'welcome', label: 'Welcome', text: 'Welcome to MBZUAI — the AI University', ttlMs: 30000 },
-  { key: 'openday', label: 'Open Day', text: 'Open Day 2025 — Register now at mbzuai.ac.ae', ttlMs: 30000 },
-  { key: 'research', label: 'Research', text: 'Pioneering research in NLP, CV & Machine Learning', ttlMs: 30000 },
-  { key: 'apply', label: 'Apply Now', text: 'Applications open for Fall 2025 — Fully funded!', ttlMs: 30000 },
+  { key: 'welcome', label: 'Welcome', text: 'Welcome to Dugong — the Embodied K2 Agent', ttlMs: 30000 },
+  { key: 'spatial', label: 'Spatial AI', text: 'Experience spatial interface generation — powered by K2 Think V2', ttlMs: 30000 },
+  { key: 'research', label: 'Research', text: 'Pioneering embodied AI, spatial computing & agent reasoning', ttlMs: 30000 },
+  { key: 'mbzuai', label: 'MBZUAI', text: 'MBZUAI — The world\'s first AI university · Fully funded programs', ttlMs: 30000 },
 ];
 
 const QR_PRESETS = [
   { key: 'web', label: 'MBZUAI Website', url: 'https://mbzuai.ac.ae' },
-  { key: 'admit', label: 'Admissions Portal', url: 'https://mbzuai.ac.ae/admissions' },
-  { key: 'papers', label: 'Research Papers', url: 'https://mbzuai.ac.ae/research' },
+  { key: 'admit', label: 'Admissions', url: 'https://mbzuai.ac.ae/admissions' },
+  { key: 'research', label: 'Research', url: 'https://mbzuai.ac.ae/research' },
 ];
 
 const MAP_CARD_PRESETS = [
   {
     key: 'campus',
-    label: 'Main Campus',
-    title: 'MBZUAI Campus',
-    subtitle: 'Masdar City, Abu Dhabi, UAE',
+    label: 'MBZUAI Campus',
+    title: 'Dugong — Physical Mode',
+    subtitle: 'HoloBox Installation · Masdar City, Abu Dhabi',
     cta: 'Get directions →',
     imageUrl: 'https://picsum.photos/seed/masdar1/400/200',
     position: 'left' as const,
@@ -30,7 +30,7 @@ const MAP_CARD_PRESETS = [
     key: 'research-center',
     label: 'Research Center',
     title: 'AI Research Center',
-    subtitle: 'Innovation Hub, Masdar City',
+    subtitle: 'Embodied Intelligence Lab · Masdar City',
     cta: 'Schedule a visit →',
     imageUrl: 'https://picsum.photos/seed/abudhabi3/400/200',
     position: 'right' as const,
@@ -39,36 +39,44 @@ const MAP_CARD_PRESETS = [
 
 const IMAGE_CARD_PRESETS = [
   {
-    key: 'nlp',
-    label: 'NLP Program',
-    title: 'Natural Language Processing',
-    subtitle: 'MSc & PhD Programs',
-    price: 'Fully Funded',
-    cta: 'Explore program →',
+    key: 'k2-think',
+    label: 'K2 Think V2',
+    title: 'K2 Think V2',
+    subtitle: 'Multi-step Reasoning · Task Decomposition',
+    price: 'Intelligence Layer',
+    cta: 'Learn more →',
     imageUrl: 'https://picsum.photos/seed/nlplab1/400/200',
     position: 'right' as const,
   },
   {
-    key: 'cv',
-    label: 'Computer Vision',
-    title: 'Computer Vision',
-    subtitle: 'Deep Learning · 3D Perception',
-    price: 'Fully Funded',
-    cta: 'Learn more →',
+    key: 'openclaw',
+    label: 'OpenClaw',
+    title: 'OpenClaw Orchestration',
+    subtitle: 'Tool Routing · Plan Execution · Agent Workflows',
+    price: 'Orchestration Layer',
+    cta: 'Explore →',
     imageUrl: 'https://picsum.photos/seed/cvision2/400/200',
     position: 'right' as const,
   },
   {
-    key: 'ml',
-    label: 'Machine Learning',
-    title: 'Machine Learning',
-    subtitle: 'Foundations · Optimization · AI Safety',
-    price: 'Fully Funded',
-    cta: 'Apply now →',
+    key: 'scene',
+    label: 'Scene Synthesis',
+    title: 'Spatial Interface Generation',
+    subtitle: 'Scene Graphs · Dynamic UI · Runtime Compilation',
+    price: 'Scene Control Layer',
+    cta: 'See demo →',
     imageUrl: 'https://picsum.photos/seed/mlresearch3/400/200',
     position: 'left' as const,
   },
 ];
+
+// Apple system colors for accent bars
+const SECTION_COLORS: Record<string, string> = {
+  subtitle: '#AF52DE',  // purple
+  qr: '#007AFF',        // blue
+  location: '#34C759',  // green
+  media: '#FF9500',     // orange
+};
 
 // ── Building Blocks ─────────────────────────────────────────
 
@@ -77,36 +85,32 @@ function PresetCard({
   description,
   onClick,
   sent,
-  accentHue,
+  accentColor,
 }: {
   label: string;
   description: string;
   onClick: () => void;
   sent: boolean;
-  accentHue: number;
+  accentColor: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="glass-card p-3 text-left cursor-pointer group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-3"
+      className="glass-card p-3 text-left cursor-pointer group transition-all duration-200 active:scale-[0.98] flex items-center gap-3"
     >
       {/* Accent bar */}
       <div
-        className="w-1 self-stretch rounded-full shrink-0 transition-all duration-300 group-hover:shadow-[0_0_8px_var(--accent)]"
+        className="w-1 self-stretch rounded-full shrink-0 transition-all duration-300"
         style={{
-          '--accent': `oklch(0.78 0.15 ${accentHue})`,
-          background: sent
-            ? 'oklch(0.72 0.19 155)'
-            : `oklch(0.78 0.15 ${accentHue} / 50%)`,
-          boxShadow: sent ? '0 0 8px oklch(0.72 0.19 155 / 60%)' : undefined,
-        } as React.CSSProperties}
+          background: sent ? '#34C759' : `${accentColor}80`,
+        }}
       />
 
       {/* Content */}
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-white/90 truncate">{label}</p>
-        <p className="text-[11px] text-gray-500 truncate mt-0.5 group-hover:text-gray-400 transition-colors">
+        <p className="text-[11px] text-white/35 truncate mt-0.5 group-hover:text-white/50 transition-colors">
           {description}
         </p>
       </div>
@@ -115,12 +119,12 @@ function PresetCard({
       <span
         className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 ${
           sent
-            ? 'text-green-400 opacity-100'
+            ? 'text-[#34C759] opacity-100'
             : 'opacity-0 group-hover:opacity-100'
         }`}
-        style={{ color: sent ? undefined : `oklch(0.78 0.12 ${accentHue})` }}
+        style={{ color: sent ? '#34C759' : accentColor }}
       >
-        {sent ? '✓ Sent' : 'Send ▶'}
+        {sent ? 'Sent' : 'Send'}
       </span>
     </button>
   );
@@ -128,29 +132,36 @@ function PresetCard({
 
 function Section({
   title,
+  description,
   badge,
-  badgeHue,
+  badgeColor,
   children,
 }: {
   title: string;
+  description?: string;
   badge: string;
-  badgeHue: number;
+  badgeColor: string;
   children: React.ReactNode;
 }) {
   return (
     <section className="space-y-2">
-      <div className="flex items-center justify-between">
-        <h3 className="section-header">{title}</h3>
-        <span
-          className="glass-badge text-[10px] uppercase tracking-widest font-semibold"
-          style={{
-            background: `oklch(0.78 0.15 ${badgeHue} / 8%)`,
-            borderColor: `oklch(0.78 0.15 ${badgeHue} / 20%)`,
-            color: `oklch(0.78 0.12 ${badgeHue})`,
-          }}
-        >
-          {badge}
-        </span>
+      <div>
+        <div className="flex items-center justify-between">
+          <h3 className="section-header">{title}</h3>
+          <span
+            className="glass-badge text-[10px] uppercase tracking-widest font-semibold"
+            style={{
+              background: `${badgeColor}14`,
+              borderColor: `${badgeColor}33`,
+              color: badgeColor,
+            }}
+          >
+            {badge}
+          </span>
+        </div>
+        {description && (
+          <p className="text-[11px] text-white/20 mt-1 leading-relaxed">{description}</p>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{children}</div>
     </section>
@@ -178,26 +189,32 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="section-header">🎨 Stage Visuals</h2>
-        <button
-          type="button"
-          onClick={() => onSend({ type: 'overlay.clearAll' })}
-          className="glass-btn text-red-400/80 hover:text-red-300 hover:shadow-[0_0_12px_oklch(0.63_0.22_25_/_25%)]"
-        >
-          💥 Clear All
-        </button>
+      <div>
+        <div className="flex items-center justify-between">
+          <h2 className="section-header">Scene Overlays</h2>
+          <button
+            type="button"
+            onClick={() => onSend({ type: 'overlay.clearAll' })}
+            className="glass-btn text-[#FF3B30]/80 hover:text-[#FF3B30]"
+          >
+            Clear All
+          </button>
+        </div>
+        <p className="text-[11px] text-white/25 mt-1 leading-relaxed">
+          Broadcast spatial overlays to the scene surface. Each preset sends a real-time command to the rendering layer.
+        </p>
       </div>
 
       {/* Text Overlays */}
-      <Section title="💬 Text Overlays" badge="subtitle" badgeHue={280}>
+      <Section title="Text Overlays" badge="subtitle" badgeColor={SECTION_COLORS.subtitle}
+        description="Subtitle banners rendered on the stage. Auto-dismiss after 30 seconds.">
         {SUBTITLE_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
             label={p.label}
             description={p.text}
             sent={sentKey === p.key}
-            accentHue={280}
+            accentColor={SECTION_COLORS.subtitle}
             onClick={() =>
               send(p.key, { type: 'overlay.subtitle.set', text: p.text, ttlMs: p.ttlMs })
             }
@@ -206,14 +223,15 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
       </Section>
 
       {/* QR Codes */}
-      <Section title="📱 QR Codes" badge="qr" badgeHue={195}>
+      <Section title="QR Codes" badge="qr" badgeColor={SECTION_COLORS.qr}
+        description="Scannable codes projected on the scene for audience interaction.">
         {QR_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
             label={p.label}
             description={p.url.replace(/^https?:\/\//, '')}
             sent={sentKey === p.key}
-            accentHue={195}
+            accentColor={SECTION_COLORS.qr}
             onClick={() =>
               send(p.key, { type: 'overlay.qr.show', url: p.url, ttlMs: 30000 })
             }
@@ -222,14 +240,15 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
       </Section>
 
       {/* Map Cards */}
-      <Section title="🗺️ Map Cards" badge="location" badgeHue={160}>
+      <Section title="Location Cards" badge="location" badgeColor={SECTION_COLORS.location}
+        description="Spatial cards with venue and installation context for physical deployments.">
         {MAP_CARD_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
             label={p.label}
             description={p.subtitle}
             sent={sentKey === p.key}
-            accentHue={160}
+            accentColor={SECTION_COLORS.location}
             onClick={() =>
               send(p.key, {
                 type: 'overlay.card.show',
@@ -247,14 +266,15 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
       </Section>
 
       {/* Image Cards */}
-      <Section title="🖼️ Image Cards" badge="media" badgeHue={220}>
+      <Section title="Capability Cards" badge="media" badgeColor={SECTION_COLORS.media}
+        description="Rich media panels showcasing Dugong architecture layers and capabilities.">
         {IMAGE_CARD_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
             label={p.label}
             description={`${p.subtitle} · ${p.price}`}
             sent={sentKey === p.key}
-            accentHue={220}
+            accentColor={SECTION_COLORS.media}
             onClick={() =>
               send(p.key, {
                 type: 'overlay.card.show',
