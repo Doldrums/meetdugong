@@ -10,7 +10,7 @@ export type FSMState =
   | 'GOODBYE';
 
 // Clip categories
-export type ClipCategory = 'idle_loops' | 'bridges' | 'interrupts' | 'utility';
+export type ClipCategory = 'idle_loops' | 'bridges' | 'interrupts' | 'utility' | 'actions';
 
 export interface ClipInfo {
   path: string;       // e.g. "/content/idle_loops/idle_0.mp4"
@@ -28,6 +28,7 @@ export interface ClipManifest {
   bridges: BridgeClip[];
   interrupts: ClipInfo[];
   utility: ClipInfo[];
+  actions: ClipInfo[];
 }
 
 // --- Control Events (Admin → Orchestrator) ---
@@ -39,6 +40,10 @@ export interface FSMManualEvent {
 
 export interface FSMResetEvent {
   type: 'fsm.reset';
+}
+
+export interface QueueClearEvent {
+  type: 'queue.clear';
 }
 
 export interface OverlaySubtitleSetEvent {
@@ -85,6 +90,7 @@ export interface OverlayQRHideEvent {
 export type ControlEvent =
   | FSMManualEvent
   | FSMResetEvent
+  | QueueClearEvent
   | OverlaySubtitleSetEvent
   | OverlaySubtitleClearEvent
   | OverlayCardShowEvent
@@ -110,6 +116,7 @@ export interface FSMTransitionEvent {
   to: FSMState;
   bridgeClip: string | null;
   nextClip: string | null;
+  stateClips: string[];
 }
 
 export interface PlaybackStartedEvent {
@@ -120,6 +127,19 @@ export interface PlaybackStartedEvent {
 export interface PlaybackEndedEvent {
   type: 'playback.ended';
   clip: string;
+}
+
+export interface PlaybackQueueItem {
+  bridge: string | null;
+  target: string | null;
+  targetState: string;
+}
+
+export interface PlaybackQueueEvent {
+  type: 'playback.queue';
+  transitionActive: boolean;
+  pendingClip: string | null;
+  items: PlaybackQueueItem[];
 }
 
 export interface OverlayAppliedEvent {
@@ -139,6 +159,7 @@ export type BroadcastEvent =
   | FSMTransitionEvent
   | PlaybackStartedEvent
   | PlaybackEndedEvent
+  | PlaybackQueueEvent
   | OverlayAppliedEvent
   | ErrorEvent;
 

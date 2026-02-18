@@ -8,9 +8,10 @@ export function scanClipManifest(contentDir: string): ClipManifest {
     bridges: [],
     interrupts: [],
     utility: [],
+    actions: [],
   };
 
-  const categories = ['idle_loops', 'bridges', 'interrupts', 'utility'] as const;
+  const categories = ['idle_loops', 'bridges', 'interrupts', 'utility', 'actions'] as const;
 
   for (const category of categories) {
     const dir = path.join(contentDir, category);
@@ -38,7 +39,8 @@ export function scanClipManifest(contentDir: string): ClipManifest {
     `[manifest] scanned: ${manifest.idle_loops.length} idle, ` +
     `${manifest.bridges.length} bridges, ` +
     `${manifest.interrupts.length} interrupts, ` +
-    `${manifest.utility.length} utility`
+    `${manifest.utility.length} utility, ` +
+    `${manifest.actions.length} actions`
   );
 
   return manifest;
@@ -62,10 +64,15 @@ function parseBridgeFilename(filename: string, clipPath: string): BridgeClip | n
   };
 }
 
+/** Check if a bridge field (e.g. "show_right") matches an FSM state (e.g. "SHOW") */
+function matchesFSMState(bridgeField: string, fsmState: string): boolean {
+  const field = bridgeField.toLowerCase();
+  const state = fsmState.toLowerCase();
+  return field === state || field.startsWith(state + '_');
+}
+
 export function findBridge(manifest: ClipManifest, from: string, to: string): BridgeClip | null {
-  const fromLower = from.toLowerCase();
-  const toLower = to.toLowerCase();
   return manifest.bridges.find(b =>
-    b.from.toLowerCase() === fromLower && b.to.toLowerCase() === toLower
+    matchesFSMState(b.from, from) && matchesFSMState(b.to, to)
   ) ?? null;
 }

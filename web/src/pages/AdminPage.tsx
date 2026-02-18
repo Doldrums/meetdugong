@@ -9,10 +9,10 @@ import EventLog from '../components/admin/EventLog';
 type Tab = 'general' | 'fsm' | 'overlays' | 'logs';
 
 const TABS: { key: Tab; label: string }[] = [
-  { key: 'general', label: '📡 General' },
-  { key: 'fsm', label: '🎮 FSM' },
-  { key: 'overlays', label: '🎨 Overlays' },
-  { key: 'logs', label: '📜 Logs' },
+  { key: 'general', label: '📡 Live Status' },
+  { key: 'fsm', label: '🎭 Character Behavior' },
+  { key: 'overlays', label: '🎨 Stage Visuals' },
+  { key: 'logs', label: '📜 Activity Stream' },
 ];
 
 export default function AdminPage() {

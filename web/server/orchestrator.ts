@@ -66,6 +66,14 @@ export class Orchestrator {
       this.wsServer.broadcast(msg);
       return;
     }
+    if (msg.type === 'playback.queue') {
+      this.wsServer.broadcast(msg);
+      return;
+    }
+    if (msg.type === 'queue.clear') {
+      this.wsServer.broadcast(msg as unknown as import('@shared/types.js').BroadcastEvent);
+      return;
+    }
 
     // Handle control events
     this.handleEvent(msg as ControlEvent);
@@ -80,7 +88,12 @@ export class Orchestrator {
     const result = this.fsm.transition(targetState);
     if (!result) return;
 
-    const bridge = findBridge(this.manifest, result.from, result.to);
+    // Direct bridge first, then fall back to exit bridge (from → IDLE)
+    let bridge = findBridge(this.manifest, result.from, result.to);
+    if (!bridge && result.from !== 'IDLE') {
+      bridge = findBridge(this.manifest, result.from, 'IDLE');
+    }
+    const stateClips = this.getClipsForState(result.to);
     const nextClip = this.pickClipForState(result.to);
 
     this.wsServer.broadcast({
@@ -89,19 +102,24 @@ export class Orchestrator {
       to: result.to,
       bridgeClip: bridge?.path ?? null,
       nextClip,
+      stateClips,
     });
   }
 
   private handleFSMReset() {
     const result = this.fsm.reset();
 
+    const exitBridge = findBridge(this.manifest, result.from, 'IDLE');
+    const stateClips = this.getClipsForState('IDLE');
+
     // Broadcast transition
     this.wsServer.broadcast({
       type: 'fsm.transition',
       from: result.from,
       to: result.to,
-      bridgeClip: null,
+      bridgeClip: exitBridge?.path ?? null,
       nextClip: null,
+      stateClips,
     });
 
     // Clear overlays
@@ -127,14 +145,23 @@ export class Orchestrator {
     this.wsServer.broadcast(event as unknown as import('@shared/types.js').BroadcastEvent);
   }
 
-  private pickClipForState(state: FSMState): string | null {
-    // For IDLE, return null — player manages idle loop locally
-    if (state === 'IDLE') return null;
+  private getClipsForState(state: FSMState): string[] {
+    if (state === 'IDLE') {
+      return this.manifest.idle_loops.map((c) => c.path);
+    }
+    const prefix = state.toLowerCase();
+    return this.manifest.actions
+      .filter((clip) => {
+        const name = clip.filename.replace(/\.(mp4|webm)$/, '');
+        return name.split('_')[0] === prefix;
+      })
+      .map((c) => c.path);
+  }
 
-    // For SHOW, look for show-related clips in utility
-    // For other states, we don't have dedicated clips yet — return null
-    // The player will continue its idle loop or handle appropriately
-    return null;
+  private pickClipForState(state: FSMState): string | null {
+    const clips = this.getClipsForState(state);
+    if (state === 'IDLE' || clips.length === 0) return null;
+    return clips[Math.floor(Math.random() * clips.length)];
   }
 
   updateManifest(manifest: ClipManifest) {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { FSMTransitionEvent, PlaybackStartedEvent, PlaybackEndedEvent } from '@shared/types';
+import type { FSMTransitionEvent, PlaybackStartedEvent, PlaybackEndedEvent, PlaybackQueueEvent } from '@shared/types';
 import VideoLayer from '../components/player/VideoLayer';
 import OverlayLayer from '../components/player/OverlayLayer';
 import DebugHUD from '../components/player/DebugHUD';
@@ -21,7 +21,8 @@ export default function PlayerPage() {
     return params.get('debug') === '1';
   });
 
-  const sendRef = useRef<((e: PlaybackStartedEvent | PlaybackEndedEvent) => void) | null>(null);
+  const idleClipsRef = useRef<string[]>([]);
+  const sendRef = useRef<((e: PlaybackStartedEvent | PlaybackEndedEvent | PlaybackQueueEvent) => void) | null>(null);
 
   const vs = useVideoSwitch({
     clips,
@@ -31,16 +32,27 @@ export default function PlayerPage() {
     onClipEnded: (clip: string) => {
       sendRef.current?.({ type: 'playback.ended', clip });
     },
+    onClipsChange: setClips,
+    onQueueChange: (snapshot) => {
+      sendRef.current?.({ type: 'playback.queue', ...snapshot });
+    },
   });
 
   const playSequenceRef = useRef(vs.playSequence);
   playSequenceRef.current = vs.playSequence;
+  const clearQueueRef = useRef(vs.clearQueue);
+  clearQueueRef.current = vs.clearQueue;
 
   const onTransition = useCallback((event: FSMTransitionEvent) => {
-    playSequenceRef.current(event.bridgeClip, event.nextClip);
+    const newClips = event.stateClips.length > 0 ? event.stateClips : idleClipsRef.current;
+    playSequenceRef.current(event.bridgeClip, event.nextClip, newClips, event.to);
   }, []);
 
-  const { send } = useWebSocket(onTransition);
+  const onQueueClear = useCallback(() => {
+    clearQueueRef.current();
+  }, []);
+
+  const { send } = useWebSocket(onTransition, onQueueClear);
   sendRef.current = send;
 
   useEffect(() => {
@@ -49,9 +61,12 @@ export default function PlayerPage() {
       .then((manifest) => {
         const idleClips =
           manifest.idle_loops?.map((c: { path: string }) => c.path) ?? [];
-        setClips(idleClips.length > 0 ? idleClips : IDLE_CLIPS);
+        const resolved = idleClips.length > 0 ? idleClips : IDLE_CLIPS;
+        idleClipsRef.current = resolved;
+        setClips(resolved);
       })
       .catch(() => {
+        idleClipsRef.current = IDLE_CLIPS;
         setClips(IDLE_CLIPS);
       });
   }, []);

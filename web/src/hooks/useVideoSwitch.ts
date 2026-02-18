@@ -1,12 +1,27 @@
 import { useRef, useCallback, useState, useEffect } from 'react';
 
+export interface QueueSnapshot {
+  transitionActive: boolean;
+  pendingClip: string | null;
+  items: Array<{ bridge: string | null; target: string | null; targetState: string }>;
+}
+
 interface UseVideoSwitchOptions {
   clips: string[];
   onClipStarted?: (clip: string) => void;
   onClipEnded?: (clip: string) => void;
+  onClipsChange?: (clips: string[]) => void;
+  onQueueChange?: (snapshot: QueueSnapshot) => void;
 }
 
-export function useVideoSwitch({ clips, onClipStarted, onClipEnded }: UseVideoSwitchOptions) {
+interface QueuedTransition {
+  bridge: string | null;
+  target: string | null;
+  clips: string[];
+  targetState: string;
+}
+
+export function useVideoSwitch({ clips, onClipStarted, onClipEnded, onClipsChange, onQueueChange }: UseVideoSwitchOptions) {
   const videoARef = useRef<HTMLVideoElement>(null);
   const videoBRef = useRef<HTMLVideoElement>(null);
   const [activeSlot, setActiveSlot] = useState<'A' | 'B'>('A');
@@ -16,13 +31,20 @@ export function useVideoSwitch({ clips, onClipStarted, onClipEnded }: UseVideoSw
   const clipsRef = useRef(clips);
   const onClipStartedRef = useRef(onClipStarted);
   const onClipEndedRef = useRef(onClipEnded);
+  const onClipsChangeRef = useRef(onClipsChange);
+  const onQueueChangeRef = useRef(onQueueChange);
   const standbyReadyRef = useRef(false);
   const swappingRef = useRef(false);
   const swapTriggeredRef = useRef(false);
+  const pendingClipRef = useRef<string | null>(null);
+  const queueRef = useRef<QueuedTransition[]>([]);
+  const transitionActiveRef = useRef(false);
 
   clipsRef.current = clips;
   onClipStartedRef.current = onClipStarted;
   onClipEndedRef.current = onClipEnded;
+  onClipsChangeRef.current = onClipsChange;
+  onQueueChangeRef.current = onQueueChange;
 
   const el = (slot: 'A' | 'B') => (slot === 'A' ? videoARef.current : videoBRef.current);
   const other = (slot: 'A' | 'B'): 'A' | 'B' => (slot === 'A' ? 'B' : 'A');
@@ -47,6 +69,39 @@ export function useVideoSwitch({ clips, onClipStarted, onClipEnded }: UseVideoSw
       standbyReadyRef.current = true;
     }, { once: true });
   }, []);
+
+  const notifyQueue = useCallback(() => {
+    onQueueChangeRef.current?.({
+      transitionActive: transitionActiveRef.current,
+      pendingClip: pendingClipRef.current,
+      items: queueRef.current.map(t => ({ bridge: t.bridge, target: t.target, targetState: t.targetState })),
+    });
+  }, []);
+
+  // Pop the next queued transition if no transition is currently active
+  const processQueue = useCallback(() => {
+    if (transitionActiveRef.current) return;
+
+    const next = queueRef.current.shift();
+    if (!next) return;
+
+    // Update clip pool immediately (both ref and React state)
+    clipsRef.current = next.clips;
+    onClipsChangeRef.current?.(next.clips);
+
+    if (next.bridge && next.target) {
+      pendingClipRef.current = next.target;
+    } else {
+      pendingClipRef.current = null;
+    }
+
+    const clipToPlay = next.bridge ?? next.target;
+    if (!clipToPlay) return;
+
+    transitionActiveRef.current = true;
+    preloadOnStandby(clipToPlay);
+    notifyQueue();
+  }, [preloadOnStandby, notifyQueue]);
 
   // Instant swap using direct DOM style — no React render delay
   const doSwap = useCallback(() => {
@@ -79,9 +134,24 @@ export function useVideoSwitch({ clips, onClipStarted, onClipEnded }: UseVideoSw
 
       if (oldEl) oldEl.pause();
 
-      // Preload next idle clip
-      const next = pickRandomClip(clipUrl);
-      if (next) preloadOnStandby(next);
+      // Bridge→action chain: pending clip goes next
+      const pending = pendingClipRef.current;
+      if (pending) {
+        pendingClipRef.current = null;
+        preloadOnStandby(pending);
+        notifyQueue();
+      } else {
+        // Transition sequence complete — try next queued transition
+        transitionActiveRef.current = false;
+        if (queueRef.current.length > 0) {
+          processQueue();
+        } else {
+          // No queued transitions — continue looping in current pool
+          notifyQueue();
+          const next = pickRandomClip(clipUrl);
+          if (next) preloadOnStandby(next);
+        }
+      }
     };
 
     // If already playing (preemptive swap), finish immediately
@@ -95,7 +165,7 @@ export function useVideoSwitch({ clips, onClipStarted, onClipEnded }: UseVideoSw
       // Fallback so we don't get stuck
       finish();
     });
-  }, [pickRandomClip, preloadOnStandby]);
+  }, [pickRandomClip, preloadOnStandby, processQueue, notifyQueue]);
 
   // Called on 'ended' — only as a fallback if timeupdate swap didn't fire
   const handleEnded = useCallback((slot: 'A' | 'B') => {
@@ -144,22 +214,42 @@ export function useVideoSwitch({ clips, onClipStarted, onClipEnded }: UseVideoSw
     }
   }, [doSwap]);
 
-  // Play a sequence: optional bridge → target clip
-  const playSequence = useCallback((bridgeClip: string | null, targetClip: string | null) => {
-    const clipToPlay = bridgeClip ?? targetClip;
-    if (!clipToPlay) return;
+  // Queue a transition. Multiple clicks append — play them in order.
+  // The active clip finishes before the next queued transition starts.
+  const playSequence = useCallback((
+    bridgeClip: string | null,
+    targetClip: string | null,
+    clips: string[],
+    targetState: string,
+  ) => {
+    if (!bridgeClip && !targetClip) {
+      // No clips to play — just update the pool immediately
+      clipsRef.current = clips;
+      onClipsChangeRef.current?.(clips);
+      return;
+    }
 
-    const standbyEl = el(other(activeSlotRef.current));
-    if (!standbyEl) return;
+    // Append to queue — each click adds a destination
+    queueRef.current.push({ bridge: bridgeClip, target: targetClip, clips, targetState });
+    processQueue();
+    notifyQueue();
+  }, [processQueue, notifyQueue]);
 
-    standbyReadyRef.current = false;
-    standbyEl.src = clipToPlay;
-    standbyEl.load();
-    standbyEl.addEventListener('canplaythrough', () => {
-      standbyReadyRef.current = true;
-      doSwap();
-    }, { once: true });
-  }, [doSwap]);
+  // Clear all pending transitions. Current clip keeps playing, then loops.
+  const clearQueue = useCallback(() => {
+    queueRef.current = [];
+    pendingClipRef.current = null;
+    transitionActiveRef.current = false;
+
+    // Override standby with a random clip from current pool
+    // (in case standby had a transition clip loaded)
+    const active = el(activeSlotRef.current);
+    const currentSrc = active?.src ?? '';
+    const next = pickRandomClip(currentSrc);
+    if (next) preloadOnStandby(next);
+
+    notifyQueue();
+  }, [pickRandomClip, preloadOnStandby, notifyQueue]);
 
   // Init: play first clip on A
   useEffect(() => {
@@ -197,5 +287,6 @@ export function useVideoSwitch({ clips, onClipStarted, onClipEnded }: UseVideoSw
     handleEnded,
     handleTimeUpdate,
     playSequence,
+    clearQueue,
   };
 }

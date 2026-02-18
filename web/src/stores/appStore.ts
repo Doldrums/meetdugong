@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { FSMState } from '@shared/types';
+import type { FSMState, PlaybackQueueItem } from '@shared/types';
 
 interface AppState {
   // FSM state
@@ -16,15 +16,25 @@ interface AppState {
   // Pending transition
   pendingState: FSMState | null;
 
+  // Playback
+  clipPlaying: boolean;
+
+  // Player queue
+  playerTransitionActive: boolean;
+  playerPendingClip: string | null;
+  playerQueueItems: PlaybackQueueItem[];
+
   // Actions
   setFSMState: (state: FSMState) => void;
   setTransition: (from: FSMState, to: FSMState) => void;
   setCurrentClip: (clip: string | null) => void;
+  setClipPlaying: (playing: boolean) => void;
   setQueueLength: (len: number) => void;
   setLastError: (err: string | null) => void;
   setWsConnected: (connected: boolean) => void;
   setOrchestratorOnline: (online: boolean) => void;
   setPendingState: (state: FSMState | null) => void;
+  setPlayerQueue: (active: boolean, pendingClip: string | null, items: PlaybackQueueItem[]) => void;
   applyStatus: (status: {
     currentState: FSMState;
     currentClip: string | null;
@@ -43,15 +53,25 @@ export const useAppStore = create<AppState>((set) => ({
   wsConnected: false,
   orchestratorOnline: false,
   pendingState: null,
+  clipPlaying: false,
+  playerTransitionActive: false,
+  playerPendingClip: null,
+  playerQueueItems: [],
 
   setFSMState: (state) => set({ currentState: state, pendingState: null }),
   setTransition: (from, to) => set({ previousState: from, currentState: to, pendingState: null }),
   setCurrentClip: (clip) => set({ currentClip: clip }),
+  setClipPlaying: (playing) => set({ clipPlaying: playing }),
   setQueueLength: (len) => set({ queueLength: len }),
   setLastError: (err) => set({ lastError: err }),
   setWsConnected: (connected) => set({ wsConnected: connected }),
   setOrchestratorOnline: (online) => set({ orchestratorOnline: online }),
   setPendingState: (state) => set({ pendingState: state }),
+  setPlayerQueue: (active, pendingClip, items) => set({
+    playerTransitionActive: active,
+    playerPendingClip: pendingClip,
+    playerQueueItems: items,
+  }),
   applyStatus: (status) =>
     set({
       currentState: status.currentState,

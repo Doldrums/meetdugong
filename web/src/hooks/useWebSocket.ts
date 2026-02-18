@@ -1,20 +1,23 @@
 import { useEffect, useRef, useCallback } from 'react';
-import type { WSMessage, ControlEvent, FSMTransitionEvent, PlaybackStartedEvent, PlaybackEndedEvent } from '@shared/types';
+import type { WSMessage, ControlEvent, FSMTransitionEvent, PlaybackStartedEvent, PlaybackEndedEvent, PlaybackQueueEvent, QueueClearEvent } from '@shared/types';
 import { WS_PATH, WS_RECONNECT_BASE_MS, WS_RECONNECT_MAX_MS, SERVER_PORT } from '@shared/constants';
 import { useAppStore } from '../stores/appStore';
 import { useOverlayStore } from '../stores/overlayStore';
 import { useLogStore } from '../stores/logStore';
 
 type TransitionHandler = (event: FSMTransitionEvent) => void;
+type QueueClearHandler = () => void;
 
-export function useWebSocket(onTransition?: TransitionHandler) {
+export function useWebSocket(onTransition?: TransitionHandler, onQueueClear?: QueueClearHandler) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectAttemptRef = useRef(0);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onTransitionRef = useRef(onTransition);
+  const onQueueClearRef = useRef(onQueueClear);
   const mountedRef = useRef(true);
 
   useEffect(() => { onTransitionRef.current = onTransition; }, [onTransition]);
+  useEffect(() => { onQueueClearRef.current = onQueueClear; }, [onQueueClear]);
 
   // Use refs to access store actions so connect/handleMessage stay stable
   const handleMessage = useCallback((event: MessageEvent) => {
@@ -37,8 +40,16 @@ export function useWebSocket(onTransition?: TransitionHandler) {
         break;
       case 'playback.started':
         useAppStore.getState().setCurrentClip(msg.clip);
+        useAppStore.getState().setClipPlaying(true);
         break;
       case 'playback.ended':
+        useAppStore.getState().setClipPlaying(false);
+        break;
+      case 'playback.queue':
+        useAppStore.getState().setPlayerQueue(msg.transitionActive, msg.pendingClip, msg.items);
+        break;
+      case 'queue.clear':
+        onQueueClearRef.current?.();
         break;
       case 'error':
         useAppStore.getState().setLastError(msg.message);
@@ -112,7 +123,7 @@ export function useWebSocket(onTransition?: TransitionHandler) {
     ws.onerror = () => {};
   }, [handleMessage]);
 
-  const send = useCallback((event: ControlEvent | PlaybackStartedEvent | PlaybackEndedEvent) => {
+  const send = useCallback((event: ControlEvent | PlaybackStartedEvent | PlaybackEndedEvent | PlaybackQueueEvent | QueueClearEvent) => {
     const ws = wsRef.current;
     if (ws?.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(event));
