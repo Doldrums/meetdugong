@@ -9,6 +9,8 @@ import { createRoutes } from './routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const contentPath = path.resolve(__dirname, '..', CONTENT_DIR);
+const distPath = path.resolve(__dirname, '..', 'dist');
+const port = process.env.PORT ? Number(process.env.PORT) : SERVER_PORT;
 
 // Scan clip manifest
 const manifest = scanClipManifest(contentPath);
@@ -20,9 +22,12 @@ app.use(express.json());
 // Serve video content
 app.use('/content', express.static(contentPath));
 
+// Serve frontend build (production)
+app.use(express.static(distPath));
+
 // Start HTTP server
-const server = app.listen(SERVER_PORT, () => {
-  console.log(`[server] listening on http://localhost:${SERVER_PORT}`);
+const server = app.listen(port, () => {
+  console.log(`[server] listening on http://localhost:${port}`);
   console.log(`[server] serving content from ${contentPath}`);
 });
 
@@ -39,5 +44,10 @@ wsServer.setConnectHandler((ws) => {
 
 // Mount REST routes
 app.use(createRoutes(orchestrator, manifest));
+
+// SPA catch-all: serve index.html for client-side routes
+app.get('{*path}', (_req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
 
 export { app, server };
