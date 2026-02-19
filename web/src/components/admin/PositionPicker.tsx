@@ -2,11 +2,8 @@ import type { OverlaySlot } from '@shared/overlayPositions';
 import { ALL_SLOTS } from '@shared/overlayPositions';
 
 const GRID: { slot: OverlaySlot; label: string; row: number; col: number }[] = [
-  { slot: 'left-top',      label: 'LT', row: 0, col: 0 },
-  { slot: 'right-top',     label: 'RT', row: 0, col: 2 },
-  { slot: 'left-mid',      label: 'LM', row: 1, col: 0 },
-  { slot: 'right-mid',     label: 'RM', row: 1, col: 2 },
-  { slot: 'bottom',        label: 'B',  row: 2, col: 0 },
+  { slot: 'mid-wide',      label: 'MW', row: 0, col: 0 },
+  { slot: 'bottom',        label: 'B',  row: 1, col: 0 },
 ];
 
 interface PositionPickerProps {

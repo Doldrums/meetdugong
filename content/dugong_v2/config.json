@@ -5,6 +5,8 @@
     "THINK": { "actionPrefix": "action_think" },
     "SPEAK": { "actionPrefix": "action_speak" },
     "GREETING": { "actionPrefix": "action_greeting" },
+    "REQUEST": { "actionPrefix": "action_request" },
+    "DEEPTHINK": { "actionPrefix": "deepthink" },
     "ADJUSTCAP": { "actionPrefix": "adjustcap" }
   }
 }

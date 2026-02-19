@@ -141,6 +141,8 @@ export class Orchestrator {
     const stateClips = this.getClipsForState(result.to);
     const nextClip = this.pickClipForState(result.to);
 
+    console.log(`[orchestrator] transition ${result.from} → ${result.to} | bridge: ${bridge?.path ?? 'none'} | nextClip: ${nextClip ?? 'none'} | stateClips: ${stateClips.length}`);
+
     this.wsServer.broadcast({
       type: 'fsm.transition',
       from: result.from,

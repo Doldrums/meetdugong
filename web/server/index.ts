@@ -42,6 +42,11 @@ wsServer.setConnectHandler((ws) => {
   wsServer.send(ws, orchestrator.getStatus());
 });
 
+// Serve skill.md at clean URL
+app.get('/skill.md', (_req, res) => {
+  res.sendFile(path.join(contentPath, 'agent', 'skill.md'));
+});
+
 // Mount REST routes
 app.use(createRoutes(orchestrator));
 

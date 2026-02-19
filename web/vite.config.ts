@@ -17,6 +17,7 @@ export default defineConfig({
       '/status': 'http://localhost:3001',
       '/manifest': 'http://localhost:3001',
       '/scenarios': 'http://localhost:3001',
+      '/skill.md': 'http://localhost:3001',
     },
   },
 });

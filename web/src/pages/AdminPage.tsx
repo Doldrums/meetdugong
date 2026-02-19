@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { ControlEvent } from '@shared/types';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useAppStore } from '../stores/appStore';
@@ -20,6 +20,7 @@ const TABS: { key: Tab; label: string; shortLabel: string }[] = [
 
 export default function AdminPage() {
   const { send } = useWebSocket();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('general');
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -63,17 +64,20 @@ export default function AdminPage() {
           </div>
         )}
         <iframe
+          ref={iframeRef}
           src="/player?mode=preview"
           className="w-full h-full border-0"
           title="Player Preview"
-          allow="autoplay"
+          allow="autoplay; fullscreen"
           onLoad={() => setIframeLoaded(true)}
         />
         <span className="absolute top-3 left-3 glass-badge pointer-events-none text-xs font-medium">PREVIEW</span>
-        <a href="/player" target="_blank" rel="noopener noreferrer"
-          className="absolute top-3 right-3 glass-badge hover:text-white transition-colors text-xs">
+        <button
+          onClick={() => iframeRef.current?.requestFullscreen?.()}
+          className="absolute top-3 right-3 glass-badge hover:text-white transition-colors text-xs cursor-pointer"
+        >
           Open Fullscreen
-        </a>
+        </button>
       </div>
 
       {/* Right: Admin Panel — bottom sheet on mobile */}

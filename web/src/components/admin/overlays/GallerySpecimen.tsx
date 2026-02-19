@@ -8,6 +8,10 @@ interface GallerySpecimenProps {
   children: (show: boolean) => ReactNode;
 }
 
+/** Lightweight viewport width — matches overlay primitive reference size */
+const VP_W = 600;
+const VP_H = 338; // 16:9
+
 export default function GallerySpecimen({
   name,
   description,
@@ -16,18 +20,21 @@ export default function GallerySpecimen({
   children,
 }: GallerySpecimenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
-  const [hasEntered, setHasEntered] = useState(false);
+  const hasEnteredRef = useRef(false);
 
-  // Compute scale factor from container width
+  // Scale viewport to fit container — ref-based, no re-renders
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
+    const vp = viewportRef.current;
+    if (!el || !vp) return;
 
     const ro = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
-      setScale(width / 1920);
+      if (width > 0) {
+        vp.style.transform = `scale(${width / VP_W})`;
+      }
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -40,8 +47,8 @@ export default function GallerySpecimen({
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasEntered) {
-          setHasEntered(true);
+        if (entry.isIntersecting && !hasEnteredRef.current) {
+          hasEnteredRef.current = true;
           setTimeout(() => setShow(true), 300);
         }
       },
@@ -49,7 +56,7 @@ export default function GallerySpecimen({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [hasEntered]);
+  }, []);
 
   // Replay animation on click
   const replay = useCallback(() => {
@@ -58,7 +65,7 @@ export default function GallerySpecimen({
   }, []);
 
   return (
-    <div className="min-w-[320px] shrink-0 snap-center flex flex-col gap-2">
+    <div className="min-w-[280px] shrink-0 snap-center flex flex-col gap-2">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="min-w-0">
@@ -77,7 +84,7 @@ export default function GallerySpecimen({
         </span>
       </div>
 
-      {/* Dark viewport — pure black for maximum contrast */}
+      {/* Dark viewport */}
       <div
         ref={containerRef}
         onClick={replay}
@@ -101,32 +108,16 @@ export default function GallerySpecimen({
           }}
         />
 
-        {/* Scanline */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
-            className="absolute left-0 right-0 h-8 opacity-[0.04]"
-            style={{
-              background: 'linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.9), transparent)',
-              animation: 'scanline 4s linear infinite',
-            }}
-          />
-        </div>
-
-        {/* Scaled 1920x1080 viewport */}
-        {scale > 0 && (
-          <div
-            className="absolute top-0 left-0 origin-top-left"
-            style={{
-              width: 1920,
-              height: 1080,
-              transform: `scale(${scale})`,
-            }}
-          >
-            <div className="relative w-full h-full">
-              {children(show)}
-            </div>
+        {/* Scaled viewport — lightweight 600×338 */}
+        <div
+          ref={viewportRef}
+          className="absolute top-0 left-0 origin-top-left"
+          style={{ width: VP_W, height: VP_H, transform: 'scale(0)' }}
+        >
+          <div className="relative w-full h-full">
+            {children(show)}
           </div>
-        )}
+        </div>
 
         {/* Top edge highlight */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
