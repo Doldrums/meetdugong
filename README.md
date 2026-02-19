@@ -100,11 +100,10 @@
 
   <sub>📹 3s previews @ 12fps · generated from <code>content/</code></sub>
 
-  #### 📹 Demo Videos
+  #### 📹 Demo
 
-  https://github.com/Doldrums/meetdugong/raw/main/docs/videos/IMG_9254.MOV
-
-  https://github.com/Doldrums/meetdugong/raw/main/docs/videos/IMG_92541.MOV
+  <img src="docs/previews/demo_1.gif" width="240" alt="Demo 1" />
+  <img src="docs/previews/demo_2.gif" width="240" alt="Demo 2" />
 
 </div>
 
