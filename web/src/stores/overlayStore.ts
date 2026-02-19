@@ -64,6 +64,10 @@ interface OverlayState {
   agentEventTimer: ReturnType<typeof setTimeout> | null;
   agentEventPosition: OverlaySlot | null;
 
+  // Debug
+  debugPositions: boolean;
+  toggleDebugPositions: () => void;
+
   // Actions
   setSubtitle: (text: string, ttlMs?: number, position?: OverlaySlot) => void;
   clearSubtitle: () => void;
@@ -103,6 +107,9 @@ export const useOverlayStore = create<OverlayState>((set, get) => ({
   agentEvent: null,
   agentEventTimer: null,
   agentEventPosition: null,
+
+  debugPositions: false,
+  toggleDebugPositions: () => set((s) => ({ debugPositions: !s.debugPositions })),
 
   setSubtitle: (text, ttlMs, position) => {
     const prev = get().subtitleTimer;
