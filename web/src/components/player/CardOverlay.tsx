@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOverlayStore, type CardOverlayData } from '../../stores/overlayStore';
+import { useOccupiedZones } from '../../hooks/useOccupiedZones';
 import { slotToCss, slotNeedsCenterTransform, DEFAULT_OVERLAY_SLOTS } from '@shared/overlayPositions';
+import type { OverlaySlot } from '@shared/overlayPositions';
 import ParticleBurst from './ParticleBurst';
 import { CardPanel } from './overlayPrimitives';
 
@@ -8,6 +10,7 @@ const EXIT_DURATION = 400;
 
 export default function CardOverlay() {
   const storeCards = useOverlayStore((s) => s.cards);
+  const occupied = useOccupiedZones();
   const [exitingCards, setExitingCards] = useState(
     new Map<string, CardOverlayData>(),
   );
@@ -55,7 +58,7 @@ export default function CardOverlay() {
   return (
     <>
       {Array.from(allCards.entries()).map(([id, { card, active }]) => (
-        <AnimatedCard key={id} card={card} active={active} />
+        <AnimatedCard key={id} card={card} active={active} occupied={occupied} />
       ))}
     </>
   );
@@ -66,9 +69,11 @@ export default function CardOverlay() {
 function AnimatedCard({
   card,
   active,
+  occupied,
 }: {
   card: CardOverlayData;
   active: boolean;
+  occupied: ReadonlySet<OverlaySlot>;
 }) {
   const [particles, setParticles] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -95,7 +100,7 @@ function AnimatedCard({
   }, [active]);
 
   const slot = card.position ?? DEFAULT_OVERLAY_SLOTS.card;
-  const posStyle = slotToCss(slot);
+  const posStyle = slotToCss(slot, occupied);
   const centered = slotNeedsCenterTransform(slot);
 
   const floatStyle = visible
@@ -104,29 +109,32 @@ function AnimatedCard({
 
   return (
     <div
-      className={`w-[55%] max-w-80 ${centered ? '-translate-x-1/2' : ''}`}
-      style={{ ...posStyle, ...floatStyle }}
+      className={centered ? '-translate-x-1/2' : ''}
+      style={posStyle}
     >
-      {/* Glass panel — delayed reveal */}
-      <div
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible
-            ? 'scale(1) translateY(0)'
-            : 'scale(0.96) translateY(8px)',
-          transition: [
-            `opacity ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
-            `transform ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
-          ].join(', '),
-          backdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
-          WebkitBackdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
-          borderRadius: 22,
-          overflow: 'hidden',
-        }}
-      >
-        <CardPanel card={card} />
+      {/* Float wrapper — bobs inside the clipped outer div */}
+      <div style={floatStyle}>
+        {/* Glass panel — delayed reveal */}
+        <div
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible
+              ? 'scale(1) translateY(0)'
+              : 'scale(0.96) translateY(8px)',
+            transition: [
+              `opacity ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+              `transform ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+            ].join(', '),
+            backdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
+            WebkitBackdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
+            borderRadius: 22,
+            overflow: 'hidden',
+          }}
+        >
+          <CardPanel card={card} />
+        </div>
+        <ParticleBurst trigger={particles} color="rgba(120, 180, 255, 0.9)" />
       </div>
-      <ParticleBurst trigger={particles} color="rgba(120, 180, 255, 0.9)" />
     </div>
   );
 }

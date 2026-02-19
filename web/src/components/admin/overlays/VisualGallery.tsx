@@ -22,7 +22,7 @@ const DEMO_CARD_LEFT: CardOverlayData = {
   title: 'Dugong — Physical Mode',
   subtitle: 'HoloBox Installation · Masdar City',
   cta: 'Get directions →',
-  position: 'top-left',
+  position: 'left-top',
 };
 
 const DEMO_CARD_RIGHT: CardOverlayData = {
@@ -31,7 +31,7 @@ const DEMO_CARD_RIGHT: CardOverlayData = {
   subtitle: 'Multi-step Reasoning · Task Decomposition',
   price: 'Intelligence Layer',
   cta: 'Learn more →',
-  position: 'top-right',
+  position: 'right-top',
 };
 
 // ── Gallery ──

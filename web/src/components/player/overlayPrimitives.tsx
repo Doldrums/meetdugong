@@ -45,9 +45,9 @@ export const SF_FONT =
 export function SubtitlePanel({ text }: { text: string }) {
   return (
     <HudPanel tint={SUBTITLE_TINT} style={{ borderRadius: 24 }}>
-      <div className="px-8 py-4 text-center">
+      <div className="px-8 py-4 text-center whitespace-nowrap">
         <span
-          className="text-lg font-semibold leading-snug tracking-[-0.01em]"
+          className="text-lg font-semibold leading-snug tracking-[-0.01em] whitespace-nowrap"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: '0 1px 6px rgba(80, 60, 160, 0.40)',
@@ -104,7 +104,7 @@ export function CardPanel({
       {/* Content */}
       <div className="px-4 pb-4 pt-3 space-y-1.5" style={{ fontFamily: SF_FONT }}>
         <h3
-          className="font-bold text-base leading-tight"
+          className="font-bold text-base leading-tight whitespace-nowrap"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: '0 1px 4px rgba(40, 80, 160, 0.35)',
@@ -115,7 +115,7 @@ export function CardPanel({
 
         {card.subtitle && (
           <p
-            className="text-sm leading-snug"
+            className="text-sm leading-snug whitespace-nowrap"
             style={{
               color: 'rgba(255, 255, 255, 0.65)',
               textShadow: '0 1px 3px rgba(40, 80, 160, 0.20)',
@@ -127,7 +127,7 @@ export function CardPanel({
 
         {card.price && (
           <p
-            className="text-lg font-bold"
+            className="text-lg font-bold whitespace-nowrap"
             style={{
               color: '#fff',
               textShadow: '0 0 12px rgba(255, 255, 255, 0.40)',
@@ -147,7 +147,7 @@ export function CardPanel({
               }}
             />
             <p
-              className="text-xs font-semibold"
+              className="text-xs font-semibold whitespace-nowrap"
               style={{ color: 'rgba(255, 255, 255, 0.85)' }}
             >
               {card.cta}
@@ -270,7 +270,7 @@ export function QRPanel({
             }}
           />
           <p
-            className="text-[10px] font-medium text-center truncate"
+            className="text-[10px] font-medium text-center whitespace-nowrap"
             style={{
               color: 'rgba(255, 255, 255, 0.65)',
               fontFamily:
@@ -327,7 +327,7 @@ export function StateBadgePanel({ data }: { data: AgentStateData }) {
 
         {/* State label */}
         <span
-          className="text-sm font-bold uppercase tracking-[0.10em]"
+          className="text-sm font-bold uppercase tracking-[0.10em] whitespace-nowrap"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: `0 0 12px ${color}, 0 1px 4px rgba(0,0,0,0.3)`,
@@ -354,7 +354,7 @@ export function ActionFeedPanel({ data }: { data: AgentActionData }) {
       <div className="px-5 pb-4 pt-7 space-y-2" style={{ fontFamily: SF_FONT }}>
         {/* Action name */}
         <h3
-          className="text-base font-bold leading-tight"
+          className="text-base font-bold leading-tight whitespace-nowrap"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: '0 1px 6px rgba(40, 140, 255, 0.40)',
@@ -366,7 +366,7 @@ export function ActionFeedPanel({ data }: { data: AgentActionData }) {
         {/* Detail text */}
         {data.detail && (
           <p
-            className="text-sm leading-snug"
+            className="text-sm leading-snug whitespace-nowrap"
             style={{
               color: 'rgba(255, 255, 255, 0.65)',
               textShadow: '0 1px 3px rgba(0,0,0,0.20)',
@@ -413,7 +413,7 @@ export function ThinkingPanel({ data }: { data: AgentThinkingData }) {
         {/* Thinking text with animated dots */}
         <div className="flex items-center gap-2">
           <span
-            className="text-base font-semibold"
+            className="text-base font-semibold whitespace-nowrap"
             style={{
               color: 'rgba(255, 255, 255, 0.90)',
               textShadow: '0 0 12px rgba(140, 80, 240, 0.50)',
@@ -422,7 +422,7 @@ export function ThinkingPanel({ data }: { data: AgentThinkingData }) {
             {text}
           </span>
           {/* Animated dots */}
-          <span className="flex gap-1">
+          <span className="flex gap-1 shrink-0">
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
@@ -443,7 +443,7 @@ export function ThinkingPanel({ data }: { data: AgentThinkingData }) {
             {data.steps.map((step, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2 text-xs"
+                className="flex items-center gap-2 text-xs whitespace-nowrap"
                 style={{ color: 'rgba(255,255,255,0.55)' }}
               >
                 <span
@@ -456,7 +456,7 @@ export function ThinkingPanel({ data }: { data: AgentThinkingData }) {
                 >
                   {i + 1}
                 </span>
-                <span className="truncate">{step}</span>
+                <span className="whitespace-nowrap">{step}</span>
               </div>
             ))}
           </div>
@@ -485,7 +485,7 @@ export function EventToastPanel({ data }: { data: AgentEventData }) {
       tint={AGENT_EVENT_TINT}
       style={{ borderRadius: 16 }}
     >
-      <div className="px-4 py-3 flex items-center gap-2.5" style={{ fontFamily: SF_FONT }}>
+      <div className="px-4 py-3 flex items-center gap-2.5 whitespace-nowrap" style={{ fontFamily: SF_FONT }}>
         {/* Event type dot */}
         <div
           className="w-2 h-2 rounded-full shrink-0"
@@ -511,10 +511,10 @@ export function EventToastPanel({ data }: { data: AgentEventData }) {
 
         {/* Summary */}
         <span
-          className="text-xs font-medium truncate"
+          className="text-xs font-semibold whitespace-nowrap"
           style={{
-            color: 'rgba(255, 255, 255, 0.80)',
-            textShadow: '0 1px 3px rgba(0,0,0,0.20)',
+            color: 'rgba(255, 255, 255, 0.95)',
+            textShadow: '0 1px 4px rgba(0,0,0,0.50), 0 0 8px rgba(0,0,0,0.25)',
           }}
         >
           {data.summary}

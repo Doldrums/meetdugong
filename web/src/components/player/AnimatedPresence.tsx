@@ -73,28 +73,31 @@ export default function AnimatedPresence({
   return (
     <div
       className={className}
-      style={{ ...styleProp, ...floatStyle }}
+      style={styleProp}
     >
-      {/* Glass panel — delayed reveal */}
-      <div
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible
-            ? 'scale(1) translateY(0)'
-            : 'scale(0.96) translateY(8px)',
-          transition: [
-            `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
-            `transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
-          ].join(', '),
-          backdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
-          WebkitBackdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
-          borderRadius: 22,
-          overflow: 'hidden',
-        }}
-      >
-        {children}
+      {/* Float wrapper — bobs inside the clipped outer div */}
+      <div style={floatStyle}>
+        {/* Glass panel — delayed reveal */}
+        <div
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible
+              ? 'scale(1) translateY(0)'
+              : 'scale(0.96) translateY(8px)',
+            transition: [
+              `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+              `transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+            ].join(', '),
+            backdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
+            WebkitBackdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
+            borderRadius: 22,
+            overflow: 'hidden',
+          }}
+        >
+          {children}
+        </div>
+        <ParticleBurst trigger={particles} color={particleColor} />
       </div>
-      <ParticleBurst trigger={particles} color={particleColor} />
     </div>
   );
 }
