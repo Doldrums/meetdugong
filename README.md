@@ -102,8 +102,9 @@
 
   #### 📹 Demo Videos
 
-  <video src="docs/videos/IMG_9254.MOV" width="320" controls muted></video>
-  <video src="docs/videos/IMG_92541.MOV" width="320" controls muted></video>
+  https://github.com/Doldrums/meetdugong/raw/main/docs/videos/IMG_9254.MOV
+
+  https://github.com/Doldrums/meetdugong/raw/main/docs/videos/IMG_92541.MOV
 
 </div>
 
