@@ -1,19 +1,33 @@
-// FSM States
-export type FSMState =
-  | 'IDLE'
-  | 'AWARE'
-  | 'GREET'
-  | 'LISTEN'
-  | 'THINK'
-  | 'SPEAK'
-  | 'SHOW'
-  | 'GOODBYE';
+// FSM States — dynamic, driven by character config.json
+export type FSMState = string;
+
+// Character configuration types
+export interface CharacterStateConfig {
+  label?: string;
+  color?: string;
+  actionPrefix?: string;
+}
+
+export interface CharacterConfig {
+  name: string;
+  description?: string;
+  states: Record<string, CharacterStateConfig>;
+}
+
+export interface CharacterManifest {
+  id: string;
+  name: string;
+  description?: string;
+  states: string[];                              // ['IDLE', ...] always includes IDLE
+  stateConfigs: Record<string, CharacterStateConfig>;
+  clips: ClipManifest;
+}
 
 // Clip categories
 export type ClipCategory = 'idle_loops' | 'bridges' | 'interrupts' | 'utility' | 'actions';
 
 export interface ClipInfo {
-  path: string;       // e.g. "/content/idle_loops/idle_0.mp4"
+  path: string;       // e.g. "/content/dugong_v1/idle_loops/idle_0.mp4"
   filename: string;   // e.g. "idle_0.mp4"
   category: ClipCategory;
 }
@@ -44,6 +58,11 @@ export interface FSMResetEvent {
 
 export interface QueueClearEvent {
   type: 'queue.clear';
+}
+
+export interface CharacterSwitchEvent {
+  type: 'character.switch';
+  characterId: string;
 }
 
 export interface OverlaySubtitleSetEvent {
@@ -87,17 +106,83 @@ export interface OverlayQRHideEvent {
   type: 'overlay.qr.hide';
 }
 
+// --- Agent Overlay Events (OpenClaw) ---
+
+/** Show agent FSM state badge on screen */
+export interface OverlayAgentStateEvent {
+  type: 'overlay.agent.state';
+  state: string;
+  label?: string;
+  color?: string;
+  ttlMs?: number;
+}
+
+/** Clear agent state badge */
+export interface OverlayAgentStateClearEvent {
+  type: 'overlay.agent.state.clear';
+}
+
+/** Show what the agent is currently doing (tool call, planning, etc.) */
+export interface OverlayAgentActionEvent {
+  type: 'overlay.agent.action';
+  action: string;
+  detail?: string;
+  tool?: string;
+  progress?: number;   // 0–1
+  ttlMs?: number;
+}
+
+/** Clear agent action panel */
+export interface OverlayAgentActionClearEvent {
+  type: 'overlay.agent.action.clear';
+}
+
+/** Show thinking/reasoning indicator */
+export interface OverlayAgentThinkingEvent {
+  type: 'overlay.agent.thinking';
+  text?: string;
+  steps?: string[];
+  ttlMs?: number;
+}
+
+/** Clear thinking indicator */
+export interface OverlayAgentThinkingClearEvent {
+  type: 'overlay.agent.thinking.clear';
+}
+
+/** Show a brief event toast */
+export interface OverlayAgentEventEvent {
+  type: 'overlay.agent.event';
+  eventType: string;
+  summary: string;
+  ttlMs?: number;
+}
+
+/** Clear all agent overlays at once */
+export interface OverlayAgentClearEvent {
+  type: 'overlay.agent.clear';
+}
+
 export type ControlEvent =
   | FSMManualEvent
   | FSMResetEvent
   | QueueClearEvent
+  | CharacterSwitchEvent
   | OverlaySubtitleSetEvent
   | OverlaySubtitleClearEvent
   | OverlayCardShowEvent
   | OverlayCardHideEvent
   | OverlayClearAllEvent
   | OverlayQRShowEvent
-  | OverlayQRHideEvent;
+  | OverlayQRHideEvent
+  | OverlayAgentStateEvent
+  | OverlayAgentStateClearEvent
+  | OverlayAgentActionEvent
+  | OverlayAgentActionClearEvent
+  | OverlayAgentThinkingEvent
+  | OverlayAgentThinkingClearEvent
+  | OverlayAgentEventEvent
+  | OverlayAgentClearEvent;
 
 // --- Broadcast Events (Orchestrator → Player/Admin) ---
 
@@ -108,6 +193,10 @@ export interface StatusEvent {
   currentClip: string | null;
   queueLength: number;
   lastError: string | null;
+  activeCharacter: string;
+  characters: Array<{ id: string; name: string }>;
+  fsmStates: string[];
+  stateConfigs: Record<string, CharacterStateConfig>;
 }
 
 export interface FSMTransitionEvent {
@@ -148,6 +237,15 @@ export interface OverlayAppliedEvent {
   details: Record<string, unknown>;
 }
 
+export interface CharacterSwitchedEvent {
+  type: 'character.switched';
+  characterId: string;
+  characterName: string;
+  states: string[];
+  stateConfigs: Record<string, CharacterStateConfig>;
+  manifest: ClipManifest;
+}
+
 export interface ErrorEvent {
   type: 'error';
   code: string;
@@ -161,6 +259,7 @@ export type BroadcastEvent =
   | PlaybackEndedEvent
   | PlaybackQueueEvent
   | OverlayAppliedEvent
+  | CharacterSwitchedEvent
   | ErrorEvent;
 
 export type WSMessage = ControlEvent | BroadcastEvent;

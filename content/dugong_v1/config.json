@@ -1,0 +1,9 @@
+{
+  "name": "Dugong V1",
+  "states": {
+    "AWARE": {},
+    "LISTEN": {},
+    "THINK": {},
+    "SHOW": {}
+  }
+}

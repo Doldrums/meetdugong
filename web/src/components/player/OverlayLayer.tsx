@@ -1,6 +1,7 @@
 import Subtitle from './Subtitle';
 import CardOverlay from './CardOverlay';
 import QROverlay from './QROverlay';
+import AgentOverlay from './AgentOverlay';
 
 export default function OverlayLayer() {
   return (
@@ -8,6 +9,7 @@ export default function OverlayLayer() {
       <Subtitle />
       <CardOverlay />
       <QROverlay />
+      <AgentOverlay />
     </div>
   );
 }

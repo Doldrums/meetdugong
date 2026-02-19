@@ -1,18 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { FSMTransitionEvent, PlaybackStartedEvent, PlaybackEndedEvent, PlaybackQueueEvent } from '@shared/types';
+import type { FSMTransitionEvent, CharacterSwitchedEvent, PlaybackStartedEvent, PlaybackEndedEvent, PlaybackQueueEvent } from '@shared/types';
 import VideoLayer from '../components/player/VideoLayer';
 import OverlayLayer from '../components/player/OverlayLayer';
 import DebugHUD from '../components/player/DebugHUD';
 import { useVideoSwitch } from '../hooks/useVideoSwitch';
 import { useWebSocket } from '../hooks/useWebSocket';
-
-const IDLE_CLIPS = [
-  '/content/idle_loops/idle_0.mp4',
-  '/content/idle_loops/idle_1.mp4',
-  '/content/idle_loops/idle_2.mp4',
-  '/content/idle_loops/idle_3.mp4',
-  '/content/idle_loops/idle_4.mp4',
-];
 
 export default function PlayerPage() {
   const [clips, setClips] = useState<string[]>([]);
@@ -52,7 +44,13 @@ export default function PlayerPage() {
     clearQueueRef.current();
   }, []);
 
-  const { send } = useWebSocket(onTransition, onQueueClear);
+  const onCharacterSwitched = useCallback((event: CharacterSwitchedEvent) => {
+    const idleClips = event.manifest.idle_loops?.map((c) => c.path) ?? [];
+    idleClipsRef.current = idleClips;
+    setClips(idleClips);
+  }, []);
+
+  const { send } = useWebSocket(onTransition, onQueueClear, onCharacterSwitched);
   sendRef.current = send;
 
   useEffect(() => {
@@ -61,41 +59,22 @@ export default function PlayerPage() {
       .then((manifest) => {
         const idleClips =
           manifest.idle_loops?.map((c: { path: string }) => c.path) ?? [];
-        const resolved = idleClips.length > 0 ? idleClips : IDLE_CLIPS;
-        idleClipsRef.current = resolved;
-        setClips(resolved);
+        idleClipsRef.current = idleClips;
+        setClips(idleClips);
       })
       .catch(() => {
-        idleClipsRef.current = IDLE_CLIPS;
-        setClips(IDLE_CLIPS);
+        idleClipsRef.current = [];
+        setClips([]);
       });
   }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Don't capture when typing in inputs
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
       switch (e.key.toUpperCase()) {
-        case 'D':
-          setShowDebug((v) => !v);
-          break;
-        case 'R':
-          send({ type: 'fsm.reset' });
-          break;
-        case 'G':
-          send({ type: 'fsm.manual', state: 'GREET' });
-          break;
-        case 'L':
-          send({ type: 'fsm.manual', state: 'LISTEN' });
-          break;
-        case 'T':
-          send({ type: 'fsm.manual', state: 'THINK' });
-          break;
-        case 'S':
-          send({ type: 'fsm.manual', state: 'SPEAK' });
-          break;
+        case 'D': setShowDebug((v) => !v); break;
+        case 'R': send({ type: 'fsm.reset' }); break;
       }
     };
     window.addEventListener('keydown', handler);

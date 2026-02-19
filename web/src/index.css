@@ -94,6 +94,24 @@
   100% { top: 100%; }
 }
 
+/* Agent overlay — gentle glow breathe */
+@keyframes glow-breathe {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* Agent overlay — soft ring expand */
+@keyframes glow-ring {
+  0%   { transform: scale(1); opacity: 0.45; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Agent overlay — dot fade sequence */
+@keyframes dot-fade {
+  0%, 80%, 100% { opacity: 0.25; }
+  40%           { opacity: 1; }
+}
+
 /* ── Base Layer ──────────────────────────────────────────── */
 @layer base {
   body {

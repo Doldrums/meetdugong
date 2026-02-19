@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import type { ControlEvent, ClipManifest } from '@shared/types.js';
+import type { ControlEvent } from '@shared/types.js';
 import type { Orchestrator } from './orchestrator.js';
 
-export function createRoutes(orchestrator: Orchestrator, manifest: ClipManifest): Router {
+export function createRoutes(orchestrator: Orchestrator): Router {
   const router = Router();
 
   router.get('/status', (_req, res) => {
@@ -10,7 +10,11 @@ export function createRoutes(orchestrator: Orchestrator, manifest: ClipManifest)
   });
 
   router.get('/manifest', (_req, res) => {
-    res.json(manifest);
+    res.json(orchestrator.getActiveManifest());
+  });
+
+  router.get('/characters', (_req, res) => {
+    res.json(orchestrator.getCharacterList());
   });
 
   router.post('/event', (req, res) => {

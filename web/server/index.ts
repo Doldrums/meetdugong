@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { SERVER_PORT, CONTENT_DIR } from '@shared/constants.js';
-import { scanClipManifest } from './clip-manifest.js';
+import { scanAllCharacters } from './clip-manifest.js';
 import { WSSServer } from './ws-server.js';
 import { Orchestrator } from './orchestrator.js';
 import { createRoutes } from './routes.js';
@@ -12,8 +12,8 @@ const contentPath = path.resolve(__dirname, '..', CONTENT_DIR);
 const distPath = path.resolve(__dirname, '..', 'dist');
 const port = process.env.PORT ? Number(process.env.PORT) : SERVER_PORT;
 
-// Scan clip manifest
-const manifest = scanClipManifest(contentPath);
+// Scan all character directories
+const characters = scanAllCharacters(contentPath);
 
 // Express app
 const app = express();
@@ -35,7 +35,7 @@ const server = app.listen(port, () => {
 const wsServer = new WSSServer(server);
 
 // Orchestrator
-const orchestrator = new Orchestrator(manifest, wsServer);
+const orchestrator = new Orchestrator(characters, wsServer);
 
 // Send status snapshot to newly connected clients
 wsServer.setConnectHandler((ws) => {
@@ -43,7 +43,7 @@ wsServer.setConnectHandler((ws) => {
 });
 
 // Mount REST routes
-app.use(createRoutes(orchestrator, manifest));
+app.use(createRoutes(orchestrator));
 
 // SPA catch-all: serve index.html for client-side routes
 app.get('{*path}', (_req, res) => {

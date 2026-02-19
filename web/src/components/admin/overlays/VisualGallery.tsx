@@ -7,6 +7,10 @@ import {
   SubtitlePanel,
   CardPanel,
   QRPanel,
+  StateBadgePanel,
+  ActionFeedPanel,
+  ThinkingPanel,
+  EventToastPanel,
   GLASS_TINT,
   SF_FONT,
 } from '../../player/overlayPrimitives';

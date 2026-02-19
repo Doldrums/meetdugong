@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import type { FSMState, PlaybackQueueItem } from '@shared/types';
+import type { CharacterStateConfig, PlaybackQueueItem } from '@shared/types';
 
 interface AppState {
   // FSM state
-  currentState: FSMState;
-  previousState: FSMState | null;
+  currentState: string;
+  previousState: string | null;
   currentClip: string | null;
   queueLength: number;
   lastError: string | null;
@@ -14,7 +14,7 @@ interface AppState {
   orchestratorOnline: boolean;
 
   // Pending transition
-  pendingState: FSMState | null;
+  pendingState: string | null;
 
   // Playback
   clipPlaying: boolean;
@@ -24,23 +24,40 @@ interface AppState {
   playerPendingClip: string | null;
   playerQueueItems: PlaybackQueueItem[];
 
+  // Character info
+  activeCharacter: string;
+  characters: Array<{ id: string; name: string }>;
+  fsmStates: string[];
+  stateConfigs: Record<string, CharacterStateConfig>;
+
   // Actions
-  setFSMState: (state: FSMState) => void;
-  setTransition: (from: FSMState, to: FSMState) => void;
+  setFSMState: (state: string) => void;
+  setTransition: (from: string, to: string) => void;
   setCurrentClip: (clip: string | null) => void;
   setClipPlaying: (playing: boolean) => void;
   setQueueLength: (len: number) => void;
   setLastError: (err: string | null) => void;
   setWsConnected: (connected: boolean) => void;
   setOrchestratorOnline: (online: boolean) => void;
-  setPendingState: (state: FSMState | null) => void;
+  setPendingState: (state: string | null) => void;
   setPlayerQueue: (active: boolean, pendingClip: string | null, items: PlaybackQueueItem[]) => void;
+  setActiveCharacter: (id: string) => void;
+  setCharacterInfo: (info: {
+    activeCharacter: string;
+    characters: Array<{ id: string; name: string }>;
+    fsmStates: string[];
+    stateConfigs: Record<string, CharacterStateConfig>;
+  }) => void;
   applyStatus: (status: {
-    currentState: FSMState;
+    currentState: string;
     currentClip: string | null;
     queueLength: number;
     lastError: string | null;
     orchestrator: string;
+    activeCharacter: string;
+    characters: Array<{ id: string; name: string }>;
+    fsmStates: string[];
+    stateConfigs: Record<string, CharacterStateConfig>;
   }) => void;
 }
 
@@ -57,6 +74,10 @@ export const useAppStore = create<AppState>((set) => ({
   playerTransitionActive: false,
   playerPendingClip: null,
   playerQueueItems: [],
+  activeCharacter: '',
+  characters: [],
+  fsmStates: ['IDLE'],
+  stateConfigs: {},
 
   setFSMState: (state) => set({ currentState: state, pendingState: null }),
   setTransition: (from, to) => set({ previousState: from, currentState: to, pendingState: null }),
@@ -72,6 +93,13 @@ export const useAppStore = create<AppState>((set) => ({
     playerPendingClip: pendingClip,
     playerQueueItems: items,
   }),
+  setActiveCharacter: (id) => set({ activeCharacter: id }),
+  setCharacterInfo: (info) => set({
+    activeCharacter: info.activeCharacter,
+    characters: info.characters,
+    fsmStates: info.fsmStates,
+    stateConfigs: info.stateConfigs,
+  }),
   applyStatus: (status) =>
     set({
       currentState: status.currentState,
@@ -80,5 +108,9 @@ export const useAppStore = create<AppState>((set) => ({
       lastError: status.lastError,
       orchestratorOnline: status.orchestrator === 'online',
       pendingState: null,
+      activeCharacter: status.activeCharacter,
+      characters: status.characters,
+      fsmStates: status.fsmStates,
+      stateConfigs: status.stateConfigs,
     }),
 }));

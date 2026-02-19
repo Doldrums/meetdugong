@@ -1,63 +1,23 @@
-import { useState, useCallback, useEffect } from 'react';
-import type { ClipManifest, ControlEvent, FSMState } from '@shared/types';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import type { ClipManifest, ControlEvent, CharacterStateConfig } from '@shared/types';
 import { useAppStore } from '../../stores/appStore';
 import { useLogStore } from '../../stores/logStore';
 
-const FSM_STATES_LIST: FSMState[] = ['IDLE', 'AWARE', 'GREET', 'LISTEN', 'THINK', 'SPEAK', 'SHOW', 'GOODBYE'];
-
-function matchFSMState(value: string): FSMState | null {
-  const lower = value.toLowerCase();
-  for (const state of FSM_STATES_LIST) {
-    if (lower === state.toLowerCase() || lower.startsWith(state.toLowerCase() + '_')) {
-      return state;
-    }
-  }
-  return null;
-}
-
-function deriveSupportedStates(manifest: ClipManifest): Set<FSMState> {
-  const supported = new Set<FSMState>();
-  if (manifest.idle_loops.length > 0) supported.add('IDLE');
-  for (const bridge of manifest.bridges) {
-    const fromState = matchFSMState(bridge.from);
-    const toState = matchFSMState(bridge.to);
-    if (fromState) supported.add(fromState);
-    if (toState) supported.add(toState);
-  }
-  for (const clip of manifest.actions) {
-    const name = clip.filename.replace(/\.(mp4|webm)$/, '');
-    const prefix = name.split('_')[0];
-    const state = matchFSMState(prefix);
-    if (state) supported.add(state);
-  }
-  return supported;
-}
-
-function deriveClipCounts(manifest: ClipManifest): Map<FSMState, number> {
-  const counts = new Map<FSMState, number>();
-  if (manifest.idle_loops.length > 0) counts.set('IDLE', manifest.idle_loops.length);
-  for (const clip of manifest.actions) {
-    const name = clip.filename.replace(/\.(mp4|webm)$/, '');
-    const prefix = name.split('_')[0];
-    const state = matchFSMState(prefix);
-    if (state) counts.set(state, (counts.get(state) ?? 0) + 1);
-  }
-  for (const bridge of manifest.bridges) {
-    const fromState = matchFSMState(bridge.from);
-    const toState = matchFSMState(bridge.to);
-    if (fromState) counts.set(fromState, (counts.get(fromState) ?? 0) + 1);
-    if (toState) counts.set(toState, (counts.get(toState) ?? 0) + 1);
-  }
-  return counts;
-}
-
-interface FSMControlsProps {
-  onSend: (event: ControlEvent) => void;
-}
-
-const NODE_ORDER: FSMState[] = [
-  'IDLE', 'AWARE', 'GREET', 'LISTEN', 'THINK', 'SPEAK', 'SHOW', 'GOODBYE',
+// ── Color palette for auto-assigning state colors ──
+const COLOR_PALETTE = [
+  '#FF9500', // orange
+  '#34C759', // green
+  '#007AFF', // blue
+  '#AF52DE', // purple
+  '#5856D6', // indigo
+  '#FF2D55', // pink
+  '#FF3B30', // red
+  '#00C7BE', // teal
+  '#FFD60A', // yellow
+  '#64D2FF', // cyan
 ];
+
+const IDLE_COLOR = '#8E8E93';
 
 interface StateStyle {
   label: string;
@@ -68,32 +28,84 @@ interface StateStyle {
   strokeActive: string;
 }
 
-const STATE_CONFIG: Record<string, StateStyle> = {
-  IDLE:    { label: 'Idle',    color: '#8E8E93', fillBase: 'rgba(142,142,147,0.08)', fillActive: 'rgba(142,142,147,0.20)', strokeBase: 'rgba(142,142,147,0.22)', strokeActive: 'rgba(142,142,147,0.55)' },
-  AWARE:   { label: 'Aware',   color: '#FF9500', fillBase: 'rgba(255,149,0,0.08)',   fillActive: 'rgba(255,149,0,0.20)',   strokeBase: 'rgba(255,149,0,0.22)',   strokeActive: 'rgba(255,149,0,0.55)' },
-  GREET:   { label: 'Greet',   color: '#34C759', fillBase: 'rgba(52,199,89,0.08)',   fillActive: 'rgba(52,199,89,0.20)',   strokeBase: 'rgba(52,199,89,0.22)',   strokeActive: 'rgba(52,199,89,0.55)' },
-  LISTEN:  { label: 'Listen',  color: '#007AFF', fillBase: 'rgba(0,122,255,0.08)',   fillActive: 'rgba(0,122,255,0.20)',   strokeBase: 'rgba(0,122,255,0.22)',   strokeActive: 'rgba(0,122,255,0.55)' },
-  THINK:   { label: 'Think',   color: '#AF52DE', fillBase: 'rgba(175,82,222,0.08)',  fillActive: 'rgba(175,82,222,0.20)',  strokeBase: 'rgba(175,82,222,0.22)',  strokeActive: 'rgba(175,82,222,0.55)' },
-  SPEAK:   { label: 'Speak',   color: '#5856D6', fillBase: 'rgba(88,86,214,0.08)',   fillActive: 'rgba(88,86,214,0.20)',   strokeBase: 'rgba(88,86,214,0.22)',   strokeActive: 'rgba(88,86,214,0.55)' },
-  SHOW:    { label: 'Show',    color: '#FF9500', fillBase: 'rgba(255,149,0,0.08)',   fillActive: 'rgba(255,149,0,0.20)',   strokeBase: 'rgba(255,149,0,0.22)',   strokeActive: 'rgba(255,149,0,0.55)' },
-  GOODBYE: { label: 'Goodbye', color: '#FF2D55', fillBase: 'rgba(255,45,85,0.08)',   fillActive: 'rgba(255,45,85,0.20)',   strokeBase: 'rgba(255,45,85,0.22)',   strokeActive: 'rgba(255,45,85,0.55)' },
-};
+function hexToRgba(hex: string, a: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
 
-const SHORTCUT_KEYS: Record<string, string> = {
-  GREET: 'G', LISTEN: 'L', THINK: 'T', SPEAK: 'S',
-};
+function buildStateStyle(label: string, color: string): StateStyle {
+  return {
+    label,
+    color,
+    fillBase: hexToRgba(color, 0.08),
+    fillActive: hexToRgba(color, 0.20),
+    strokeBase: hexToRgba(color, 0.22),
+    strokeActive: hexToRgba(color, 0.55),
+  };
+}
+
+function buildStateConfig(
+  fsmStates: string[],
+  stateConfigs: Record<string, CharacterStateConfig>,
+): Record<string, StateStyle> {
+  const config: Record<string, StateStyle> = {};
+  let paletteIdx = 0;
+  for (const state of fsmStates) {
+    const sc = stateConfigs[state];
+    if (state === 'IDLE') {
+      config[state] = buildStateStyle(sc?.label ?? 'Idle', IDLE_COLOR);
+    } else {
+      const color = sc?.color ?? COLOR_PALETTE[paletteIdx % COLOR_PALETTE.length];
+      const label = sc?.label ?? state.charAt(0) + state.slice(1).toLowerCase();
+      config[state] = buildStateStyle(label, color);
+      paletteIdx++;
+    }
+  }
+  return config;
+}
+
+function deriveClipCounts(
+  manifest: ClipManifest,
+  fsmStates: string[],
+  stateConfigs: Record<string, CharacterStateConfig>,
+): Map<string, number> {
+  const counts = new Map<string, number>();
+  if (manifest.idle_loops.length > 0) counts.set('IDLE', manifest.idle_loops.length);
+  for (const state of fsmStates) {
+    if (state === 'IDLE') continue;
+    const sc = stateConfigs[state];
+    const prefix = sc?.actionPrefix ?? state.toLowerCase();
+    let count = 0;
+    for (const clip of manifest.actions) {
+      const name = clip.filename.replace(/\.(mp4|webm)$/, '');
+      if (name.startsWith(prefix + '_') || name === prefix) count++;
+    }
+    // Also count bridges that reference this state
+    for (const bridge of manifest.bridges) {
+      const bFrom = bridge.from.toLowerCase();
+      const bTo = bridge.to.toLowerCase();
+      const st = state.toLowerCase();
+      if (bFrom === st || bFrom.startsWith(st + '_') || bTo === st || bTo.startsWith(st + '_')) {
+        count++;
+      }
+    }
+    if (count > 0) counts.set(state, count);
+  }
+  return counts;
+}
+
+interface FSMControlsProps {
+  onSend: (event: ControlEvent) => void;
+}
 
 // ── Compact layout constants ──
 const CX = 170;
-const CY_FALLBACK = 145;
-const RADIUS_FALLBACK = 105;
 const NODE_R = 28;
-const NODE_R_UNSUPPORTED = 14;
-const COUNT = 8;
 const TOP_CY = 135;
 const TOP_RX = 95;
 const TOP_RY = 68;
-const BOTTOM_ROW_Y = 270;
 const SF = '-apple-system, BlinkMacSystemFont, sans-serif';
 
 function supportedPositions(n: number): { x: number; y: number }[] {
@@ -106,14 +118,6 @@ function supportedPositions(n: number): { x: number; y: number }[] {
       y: Math.round(TOP_CY + TOP_RY * Math.sin(angle)),
     };
   });
-}
-
-function fallbackPosition(index: number): { x: number; y: number } {
-  const angle = (2 * Math.PI * index) / COUNT - Math.PI / 2;
-  return {
-    x: CX + RADIUS_FALLBACK * Math.cos(angle),
-    y: CY_FALLBACK + RADIUS_FALLBACK * Math.sin(angle),
-  };
 }
 
 function transitionArcFromPoints(
@@ -173,9 +177,9 @@ function queueArcPath(
   };
 }
 
-function StateBadge({ state }: { state: FSMState | null }) {
+function StateBadge({ state, stateStyles }: { state: string | null; stateStyles: Record<string, StateStyle> }) {
   if (!state) return <span className="text-white/30 font-mono text-xs">---</span>;
-  const config = STATE_CONFIG[state] ?? STATE_CONFIG.IDLE;
+  const config = stateStyles[state] ?? buildStateStyle(state, IDLE_COLOR);
   return (
     <span
       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold font-mono border"
@@ -201,68 +205,64 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
   const playerPendingClip = useAppStore((s) => s.playerPendingClip);
   const playerQueueItems = useAppStore((s) => s.playerQueueItems);
 
+  // Character/state info from store
+  const fsmStates = useAppStore((s) => s.fsmStates);
+  const stateConfigs = useAppStore((s) => s.stateConfigs);
+
   const transitionCount = useLogStore(
     useCallback((s) => s.entries.filter((e) => e.event.type === 'fsm.transition').length, []),
   );
 
-  const [hoveredState, setHoveredState] = useState<FSMState | null>(null);
-  const [supportedStates, setSupportedStates] = useState<Set<FSMState> | null>(null);
-  const [clipCounts, setClipCounts] = useState<Map<FSMState, number>>(new Map());
+  const [hoveredState, setHoveredState] = useState<string | null>(null);
+  const [clipCounts, setClipCounts] = useState<Map<string, number>>(new Map());
 
+  // Build state styles dynamically from config
+  const stateStyles = useMemo(
+    () => buildStateConfig(fsmStates, stateConfigs),
+    [fsmStates, stateConfigs],
+  );
+
+  // Fetch manifest for clip counts
   useEffect(() => {
     fetch('/manifest')
       .then((r) => r.json())
       .then((m: ClipManifest) => {
-        setSupportedStates(deriveSupportedStates(m));
-        setClipCounts(deriveClipCounts(m));
+        setClipCounts(deriveClipCounts(m, fsmStates, stateConfigs));
       })
       .catch(() => {});
-  }, []);
+  }, [fsmStates, stateConfigs]);
 
-  const handleClick = (state: FSMState) => {
+  const handleClick = (state: string) => {
     setPendingState(state);
     onSend({ type: 'fsm.manual', state });
   };
   const handleReset = () => { setPendingState('IDLE'); onSend({ type: 'fsm.reset' }); };
   const handleClearQueue = () => { onSend({ type: 'queue.clear' }); };
-
   const queuePositions = new Map<string, number[]>();
   playerQueueItems.forEach((item, i) => {
-    const s = item.targetState;
+    const s = item.targetState.toUpperCase();
     if (!queuePositions.has(s)) queuePositions.set(s, []);
     queuePositions.get(s)!.push(i + 1);
   });
 
-  const activeConfig = STATE_CONFIG[currentState] ?? STATE_CONFIG.IDLE;
-  const manifestLoaded = supportedStates !== null;
-  const supportedList = manifestLoaded ? NODE_ORDER.filter((s) => supportedStates.has(s)) : [];
-  const unsupportedList = manifestLoaded ? NODE_ORDER.filter((s) => !supportedStates.has(s)) : [];
+  const activeConfig = stateStyles[currentState] ?? buildStateStyle(currentState, IDLE_COLOR);
 
-  const nodePositions = new Map<FSMState, { x: number; y: number }>();
-  const nodeRadii = new Map<FSMState, number>();
+  // All states from config go in the main ring — config is the source of truth
+  const allStates = fsmStates;
 
-  if (manifestLoaded) {
-    const positions = supportedPositions(supportedList.length);
-    supportedList.forEach((state, i) => { nodePositions.set(state, positions[i]); nodeRadii.set(state, NODE_R); });
-    const count = unsupportedList.length;
-    const totalWidth = 260;
-    const startX = CX - totalWidth / 2;
-    unsupportedList.forEach((state, i) => {
-      const x = count === 1 ? CX : startX + (totalWidth / (count - 1)) * i;
-      nodePositions.set(state, { x, y: BOTTOM_ROW_Y });
-      nodeRadii.set(state, NODE_R_UNSUPPORTED);
-    });
-  } else {
-    NODE_ORDER.forEach((state, i) => { nodePositions.set(state, fallbackPosition(i)); nodeRadii.set(state, NODE_R); });
-  }
+  const nodePositions = new Map<string, { x: number; y: number }>();
+  const nodeRadii = new Map<string, number>();
+
+  const positions = supportedPositions(allStates.length);
+  allStates.forEach((state, i) => { nodePositions.set(state, positions[i]); nodeRadii.set(state, NODE_R); });
 
   const fromPos = previousState ? nodePositions.get(previousState) : undefined;
   const toPos = nodePositions.get(currentState);
   const showArc = previousState !== null && previousState !== currentState && fromPos && toPos;
   const arcPath = showArc ? transitionArcFromPoints(fromPos, toPos) : '';
 
-  // Compute connector lines between all supported nodes
-  const allNodes = manifestLoaded ? supportedList : NODE_ORDER;
+  // Non-IDLE states for quick transition buttons
+  const quickStates = fsmStates.filter((s) => s !== 'IDLE');
 
   return (
     <div className="space-y-2.5">
@@ -287,18 +287,18 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
       <div className="flex items-center gap-2 text-[10px] font-mono bg-glass-light border border-glass-border rounded-lg px-2.5 py-1.5">
         <div className="flex items-center gap-1.5">
           <span className="text-white/25">state:</span>
-          <StateBadge state={currentState} />
+          <StateBadge state={currentState} stateStyles={stateStyles} />
         </div>
         {previousState && previousState !== currentState && (
           <div className="flex items-center gap-1 text-white/25">
             <span>from</span>
-            <span style={{ color: STATE_CONFIG[previousState]?.color }}>{previousState}</span>
+            <span style={{ color: stateStyles[previousState]?.color }}>{previousState}</span>
           </div>
         )}
         {pendingState && pendingState !== currentState && (
           <div className="flex items-center gap-1">
             <span className="text-white/25">→</span>
-            <StateBadge state={pendingState} />
+            <StateBadge state={pendingState} stateStyles={stateStyles} />
           </div>
         )}
         <div className="ml-auto flex items-center gap-2 text-white/25">
@@ -351,8 +351,8 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
             <rect x="0" y="0" width="340" height="300" rx="10" fill="url(#g-bg)" />
 
             {/* Subtle connector mesh between all supported nodes */}
-            {allNodes.map((a, i) =>
-              allNodes.slice(i + 1).map((b) => {
+            {allStates.map((a, i) =>
+              allStates.slice(i + 1).map((b) => {
                 const pa = nodePositions.get(a);
                 const pb = nodePositions.get(b);
                 if (!pa || !pb) return null;
@@ -391,10 +391,9 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
             {/* ── Queue path visualization ── */}
             {playerQueueItems.length > 0 && (() => {
               // Build ordered chain: currentState → q0 → q1 → …
-              const chain: FSMState[] = [currentState];
+              const chain: string[] = [currentState];
               for (const item of playerQueueItems) {
-                const st = matchFSMState(item.targetState);
-                if (st) chain.push(st);
+                chain.push(item.targetState.toUpperCase());
               }
 
               const edgeCounts = new Map<string, number>();
@@ -403,7 +402,7 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
               for (let i = 0; i < chain.length - 1; i++) {
                 const from = chain[i];
                 const to = chain[i + 1];
-                if (from === to) continue; // self-loop shown on node badge
+                if (from === to) continue;
                 const pFrom = nodePositions.get(from);
                 const pTo = nodePositions.get(to);
                 if (!pFrom || !pTo) continue;
@@ -418,7 +417,7 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
 
               // Unique set of queued target states for glow rings
               const queuedStates = new Set(
-                playerQueueItems.map(item => matchFSMState(item.targetState)).filter((s): s is FSMState => s !== null)
+                playerQueueItems.map(item => item.targetState.toUpperCase())
               );
 
               return (
@@ -439,15 +438,12 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
                   {/* Queue transition arcs */}
                   {arcs.map(({ step, d, mx, my }) => (
                     <g key={`qarc-${step}`}>
-                      {/* Dashed path with arrowhead */}
                       <path d={d} fill="none" stroke="rgba(255,149,0,0.20)" strokeWidth="1.5"
                         strokeDasharray="4 3" markerEnd="url(#arr-q)" />
-                      {/* Traveling dot */}
                       <circle r="2" fill="#FF9500" opacity="0.4">
                         <animateMotion dur={`${1.8 + step * 0.3}s`} repeatCount="indefinite" path={d} />
                         <animate attributeName="opacity" values="0.15;0.5;0.15" dur={`${1.8 + step * 0.3}s`} repeatCount="indefinite" />
                       </circle>
-                      {/* Step number badge at arc midpoint */}
                       <circle cx={mx} cy={my} r="6.5"
                         fill="rgba(255,149,0,0.12)" stroke="rgba(255,149,0,0.30)" strokeWidth="0.5" />
                       <text x={mx} y={my} textAnchor="middle" dominantBaseline="central"
@@ -460,28 +456,17 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
               );
             })()}
 
-            {/* Zone divider */}
-            {manifestLoaded && unsupportedList.length > 0 && (
-              <g>
-                <line x1="30" y1="245" x2="310" y2="245" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" strokeDasharray="3 3" />
-                <text x="170" y="255" textAnchor="middle" fontSize="6" fontFamily={SF} fill="rgba(255,255,255,0.10)" style={{ pointerEvents: 'none' }}>
-                  NO CONTENT
-                </text>
-              </g>
-            )}
-
-            {/* ── Supported Nodes ── */}
-            {(manifestLoaded ? supportedList : NODE_ORDER).map((state) => {
+            {/* ── State Nodes ── */}
+            {allStates.map((state) => {
               const pos = nodePositions.get(state);
               if (!pos) return null;
               const { x, y } = pos;
               const r = nodeRadii.get(state) ?? NODE_R;
-              const config = STATE_CONFIG[state] ?? STATE_CONFIG.IDLE;
+              const config = stateStyles[state] ?? buildStateStyle(state, IDLE_COLOR);
               const isActive = currentState === state;
               const isPending = pendingState === state && !isActive;
               const isHovered = hoveredState === state;
               const count = clipCounts.get(state) ?? 0;
-              const shortcut = SHORTCUT_KEYS[state];
 
               const fill = isActive || isHovered ? config.fillActive : config.fillBase;
               const stroke = isActive || isHovered ? config.strokeActive : config.strokeBase;
@@ -510,9 +495,7 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
                   {/* Glass node body */}
                   <g filter="url(#n-shadow)">
                     <circle cx={x} cy={y} r={r} fill={fill} stroke={stroke} strokeWidth={isActive ? 1.5 : 0.75} />
-                    {/* Specular top highlight */}
                     <circle cx={x} cy={y} r={r - 1} fill="url(#g-hi)" style={{ pointerEvents: 'none' }} />
-                    {/* Inner top edge — bright specular line */}
                     <path
                       d={`M ${x - r + 6} ${y - r + 3} A ${r - 2} ${r - 2} 0 0 1 ${x + r - 6} ${y - r + 3}`}
                       fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="0.5"
@@ -570,19 +553,7 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
                         fill={config.fillActive} stroke={config.strokeBase} strokeWidth="0.5" />
                       <text x={x - r + (count >= 10 ? 13 : 10)} y={y - r - 3} textAnchor="middle" dominantBaseline="central"
                         fontSize="7" fontWeight="bold" fontFamily={SF} fill={config.color}>
-                        ×{count}
-                      </text>
-                    </g>
-                  )}
-
-                  {/* Keyboard shortcut key cap */}
-                  {shortcut && (
-                    <g style={{ pointerEvents: 'none' }}>
-                      <rect x={x + r - 12} y={y - r - 1} width="13" height="11" rx="3"
-                        fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.10)" strokeWidth="0.5" />
-                      <text x={x + r - 5.5} y={y - r + 4.5} textAnchor="middle" dominantBaseline="central"
-                        fontSize="7.5" fill="rgba(255,255,255,0.35)" fontFamily={SF}>
-                        {shortcut}
+                        x{count}
                       </text>
                     </g>
                   )}
@@ -619,40 +590,6 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
               );
             })}
 
-            {/* ── Unsupported Nodes ── */}
-            {manifestLoaded && unsupportedList.map((state) => {
-              const pos = nodePositions.get(state);
-              if (!pos) return null;
-              const { x, y } = pos;
-              const r = NODE_R_UNSUPPORTED;
-              const config = STATE_CONFIG[state] ?? STATE_CONFIG.IDLE;
-              const isActive = currentState === state;
-              const isPending = pendingState === state && !isActive;
-
-              return (
-                <g key={state} style={{ cursor: 'pointer' }}
-                  onClick={() => handleClick(state)}
-                  onMouseEnter={() => setHoveredState(state)}
-                  onMouseLeave={() => setHoveredState(null)}
-                >
-                  {isActive && (
-                    <circle cx={x} cy={y} r={r + 3} fill="none" stroke={config.color} strokeWidth="0.75" strokeOpacity="0.15">
-                      <animate attributeName="r" values={`${r + 2};${r + 5};${r + 2}`} dur="3s" repeatCount="indefinite" />
-                    </circle>
-                  )}
-                  {isPending && (
-                    <circle cx={x} cy={y} r={r + 2} fill="none" stroke={config.color} strokeWidth="0.75" strokeDasharray="3 2" opacity="0.3">
-                      <animateTransform attributeName="transform" type="rotate" from={`0 ${x} ${y}`} to={`360 ${x} ${y}`} dur="2.5s" repeatCount="indefinite" />
-                    </circle>
-                  )}
-                  <circle cx={x} cy={y} r={r} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" strokeWidth="0.75" strokeDasharray="2 2" />
-                  <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize="5.5" fontWeight="600"
-                    fill="rgba(255,255,255,0.20)" fontFamily={SF} style={{ pointerEvents: 'none' }}>
-                    {state}
-                  </text>
-                </g>
-              );
-            })}
           </svg>
         </div>
 
@@ -711,9 +648,8 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
             <div className="text-[7px] uppercase tracking-wider text-white/25 mb-0.5">Quick Transition</div>
             <div className="text-[8px] text-white/15 mb-1">Trigger a state change or queue it behind active transitions</div>
             <div className="grid grid-cols-3 sm:grid-cols-2 gap-1">
-              {(['GREET', 'LISTEN', 'THINK', 'SPEAK', 'SHOW'] as FSMState[]).map((state) => {
-                const cfg = STATE_CONFIG[state];
-                const key = SHORTCUT_KEYS[state];
+              {quickStates.map((state) => {
+                const cfg = stateStyles[state] ?? buildStateStyle(state, IDLE_COLOR);
                 const isActive = currentState === state;
                 const qPos = queuePositions.get(state);
                 return (
@@ -722,7 +658,6 @@ export default function FSMControls({ onSend }: FSMControlsProps) {
                     style={{ backgroundColor: isActive ? cfg.fillActive : cfg.fillBase, borderColor: isActive ? cfg.strokeActive : cfg.strokeBase, color: cfg.color }}
                   >
                     <span className="truncate">{state}</span>
-                    {key && <span className="ml-auto text-[6px] text-white/20 font-mono bg-black/20 rounded px-0.5">{key}</span>}
                     {qPos && (
                       <span className="absolute -top-1 -right-1 bg-[#FF9500]/80 text-black text-[6px] font-bold rounded-full w-2.5 h-2.5 flex items-center justify-center">
                         {qPos[0]}

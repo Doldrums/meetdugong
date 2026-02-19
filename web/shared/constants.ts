@@ -1,17 +1,4 @@
-import type { FSMState } from './types.js';
-
-export const FSM_STATES: FSMState[] = [
-  'IDLE',
-  'AWARE',
-  'GREET',
-  'LISTEN',
-  'THINK',
-  'SPEAK',
-  'SHOW',
-  'GOODBYE',
-];
-
-export const DEFAULT_STATE: FSMState = 'IDLE';
+export const DEFAULT_STATE = 'IDLE';
 
 export const WS_PATH = '/ws';
 export const SERVER_PORT = 3001;

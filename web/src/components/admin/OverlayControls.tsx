@@ -70,12 +70,92 @@ const IMAGE_CARD_PRESETS = [
   },
 ];
 
+// ── Agent State Presets ──
+
+const AGENT_STATE_PRESETS = [
+  { key: 'agent-idle',     label: 'Idle',      state: 'IDLE',     desc: 'Agent standing by — ambient state' },
+  { key: 'agent-aware',    label: 'Aware',     state: 'AWARE',    desc: 'Detected user presence nearby' },
+  { key: 'agent-listen',   label: 'Listening',  state: 'LISTEN',   desc: 'Actively receiving voice input' },
+  { key: 'agent-think',    label: 'Thinking',   state: 'THINK',    desc: 'Multi-step reasoning in progress' },
+  { key: 'agent-show',     label: 'Presenting', state: 'SHOW',     desc: 'Displaying results to the user' },
+  { key: 'agent-speak',    label: 'Speaking',   state: 'SPEAK',    desc: 'Generating spoken response' },
+];
+
+const AGENT_ACTION_PRESETS = [
+  {
+    key: 'action-tool',
+    label: 'Tool Routing',
+    action: 'Tool Routing',
+    detail: 'Invoking scene_graph.query for spatial layout analysis',
+    tool: 'scene_graph',
+    progress: 0.65,
+  },
+  {
+    key: 'action-plan',
+    label: 'Plan Execution',
+    action: 'Plan Execution',
+    detail: 'Step 3 of 5 — generating scene commands from spatial data',
+    tool: 'planner',
+    progress: 0.6,
+  },
+  {
+    key: 'action-search',
+    label: 'Knowledge Search',
+    action: 'Knowledge Search',
+    detail: 'Querying vector store for MBZUAI research publications',
+    tool: 'retriever',
+    progress: 0.3,
+  },
+  {
+    key: 'action-generate',
+    label: 'Content Generation',
+    action: 'Content Generation',
+    detail: 'Synthesizing spatial UI components for the scene',
+    tool: 'generator',
+    progress: 0.8,
+  },
+];
+
+const AGENT_THINKING_PRESETS = [
+  {
+    key: 'think-reason',
+    label: 'Reasoning',
+    text: 'Reasoning',
+    steps: ['Decompose user intent', 'Select tools for spatial query', 'Generate scene commands'],
+  },
+  {
+    key: 'think-analyze',
+    label: 'Analyzing',
+    text: 'Analyzing context',
+    steps: ['Parse conversation history', 'Extract key entities', 'Match to knowledge base'],
+  },
+  {
+    key: 'think-plan',
+    label: 'Planning',
+    text: 'Building plan',
+    steps: ['Identify required tools', 'Order execution steps', 'Prepare fallback paths', 'Validate constraints'],
+  },
+];
+
+const AGENT_EVENT_PRESETS = [
+  { key: 'evt-transition', label: 'State Transition', eventType: 'transition', summary: 'IDLE → THINK via bridge clip' },
+  { key: 'evt-playback',   label: 'Playback Start',  eventType: 'playback',   summary: 'Playing action_think_01.mp4' },
+  { key: 'evt-overlay',    label: 'Overlay Applied',  eventType: 'overlay',    summary: 'Subtitle overlay applied — "Welcome to Dugong"' },
+  { key: 'evt-agent',      label: 'Agent Action',     eventType: 'agent',      summary: 'Plan execution step 2/4 complete' },
+  { key: 'evt-error',      label: 'Error',            eventType: 'error',      summary: 'Tool timeout — scene_graph.query exceeded 5s' },
+  { key: 'evt-character',  label: 'Character Switch',  eventType: 'character',  summary: 'Switched to Dugong V2' },
+];
+
 // Apple system colors for accent bars
 const SECTION_COLORS: Record<string, string> = {
   subtitle: '#AF52DE',  // purple
   qr: '#007AFF',        // blue
   location: '#34C759',  // green
   media: '#FF9500',     // orange
+  agentState: '#FF9500',    // orange
+  agentAction: '#007AFF',   // blue
+  agentThinking: '#AF52DE', // purple
+  agentEvent: '#34C759',    // green
 };
 
 // ── Building Blocks ─────────────────────────────────────────
@@ -286,6 +366,114 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 imageUrl: p.imageUrl,
                 position: p.position,
                 ttlMs: 30000,
+              })
+            }
+          />
+        ))}
+      </Section>
+
+      {/* ── OpenClaw Agent Overlays ── */}
+      <div className="pt-2">
+        <div
+          className="h-px w-full mb-5"
+          style={{
+            background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent)',
+          }}
+        />
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="section-header">Agent Overlays</h2>
+          <button
+            type="button"
+            onClick={() => onSend({ type: 'overlay.agent.clear' })}
+            className="glass-btn text-[#FF3B30]/80 hover:text-[#FF3B30]"
+          >
+            Clear Agent
+          </button>
+        </div>
+        <p className="text-[11px] text-white/25 mb-4 leading-relaxed">
+          Broadcast OpenClaw agent state, actions, reasoning steps, and events to the stage surface.
+        </p>
+      </div>
+
+      {/* Agent State */}
+      <Section title="Agent State" badge="state" badgeColor={SECTION_COLORS.agentState}
+        description="Show the current FSM state as a glowing badge on the stage.">
+        {AGENT_STATE_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={p.desc}
+            sent={sentKey === p.key}
+            accentColor={SECTION_COLORS.agentState}
+            onClick={() =>
+              send(p.key, { type: 'overlay.agent.state', state: p.state, ttlMs: 30000 })
+            }
+          />
+        ))}
+      </Section>
+
+      {/* Agent Actions */}
+      <Section title="Agent Actions" badge="action" badgeColor={SECTION_COLORS.agentAction}
+        description="Show what the agent is currently doing — tool routing, plan execution, search.">
+        {AGENT_ACTION_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={`${p.detail}`}
+            sent={sentKey === p.key}
+            accentColor={SECTION_COLORS.agentAction}
+            onClick={() =>
+              send(p.key, {
+                type: 'overlay.agent.action',
+                action: p.action,
+                detail: p.detail,
+                tool: p.tool,
+                progress: p.progress,
+                ttlMs: 30000,
+              })
+            }
+          />
+        ))}
+      </Section>
+
+      {/* Agent Thinking */}
+      <Section title="Thinking / Reasoning" badge="think" badgeColor={SECTION_COLORS.agentThinking}
+        description="Animated thinking indicators with reasoning step visualization.">
+        {AGENT_THINKING_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={p.steps.join(' → ')}
+            sent={sentKey === p.key}
+            accentColor={SECTION_COLORS.agentThinking}
+            onClick={() =>
+              send(p.key, {
+                type: 'overlay.agent.thinking',
+                text: p.text,
+                steps: p.steps,
+                ttlMs: 30000,
+              })
+            }
+          />
+        ))}
+      </Section>
+
+      {/* Agent Events */}
+      <Section title="Event Toasts" badge="event" badgeColor={SECTION_COLORS.agentEvent}
+        description="Compact event notifications for transitions, playback, errors, and agent actions.">
+        {AGENT_EVENT_PRESETS.map((p) => (
+          <PresetCard
+            key={p.key}
+            label={p.label}
+            description={p.summary}
+            sent={sentKey === p.key}
+            accentColor={SECTION_COLORS.agentEvent}
+            onClick={() =>
+              send(p.key, {
+                type: 'overlay.agent.event',
+                eventType: p.eventType,
+                summary: p.summary,
+                ttlMs: 8000,
               })
             }
           />

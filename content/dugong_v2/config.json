@@ -1,0 +1,10 @@
+{
+  "name": "Dugong V2",
+  "states": {
+    "HAPPY": { "actionPrefix": "action_happy" },
+    "THINK": { "actionPrefix": "action_think" },
+    "SPEAK": { "actionPrefix": "action_speak" },
+    "GREETING": { "actionPrefix": "action_greeting" },
+    "ADJUSTCAP": { "actionPrefix": "adjustcap" }
+  }
+}
