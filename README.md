@@ -100,6 +100,11 @@
 
   <sub>📹 3s previews @ 12fps · generated from <code>content/</code></sub>
 
+  #### 📹 Demo Videos
+
+  <video src="docs/videos/IMG_9254.MOV" width="320" controls muted></video>
+  <video src="docs/videos/IMG_92541.MOV" width="320" controls muted></video>
+
 </div>
 
 ---

@@ -93,6 +93,10 @@ export default function ScenariosTab({ onSend }: ScenariosTabProps) {
 
   return (
     <div className="space-y-3">
+      <p className="text-[11px] text-white/30 leading-relaxed">
+        Scenarios are pre-defined interaction sequences for testing and demo purposes.
+        Use them to preview FSM transitions, overlay timing, and end-to-end flows before going live.
+      </p>
       {scenarios.map((scenario) => {
         const compatible = checkCompatibility(scenario);
         const isActive = activeScenarioId === scenario.id;
