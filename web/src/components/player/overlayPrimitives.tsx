@@ -354,7 +354,7 @@ export function ActionFeedPanel({ data }: { data: AgentActionData }) {
       <div className="px-5 pb-4 pt-7 space-y-2" style={{ fontFamily: SF_FONT }}>
         {/* Action name */}
         <h3
-          className="text-base font-bold leading-tight whitespace-nowrap"
+          className="text-base font-bold leading-tight whitespace-pre-line"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: '0 1px 6px rgba(40, 140, 255, 0.40)',
@@ -366,7 +366,7 @@ export function ActionFeedPanel({ data }: { data: AgentActionData }) {
         {/* Detail text */}
         {data.detail && (
           <p
-            className="text-sm leading-snug whitespace-nowrap"
+            className="text-sm leading-snug whitespace-pre-line"
             style={{
               color: 'rgba(255, 255, 255, 0.65)',
               textShadow: '0 1px 3px rgba(0,0,0,0.20)',

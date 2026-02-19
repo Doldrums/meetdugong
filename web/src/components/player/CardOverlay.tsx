@@ -125,6 +125,7 @@ function AnimatedCard({
               `opacity ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
               `transform ${EXIT_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`,
             ].join(', '),
+            background: 'rgba(15, 20, 40, 0.20)',
             backdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
             WebkitBackdropFilter: 'blur(8px) saturate(140%) brightness(105%)',
             borderRadius: 22,

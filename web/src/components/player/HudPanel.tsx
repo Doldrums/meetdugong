@@ -1,5 +1,15 @@
 import type { ReactNode, CSSProperties } from 'react';
 
+const SPARKLES = [
+  { x: '12%', y: '18%', size: 2.5, glow: 3, dur: 3.2, delay: 0,    anim: 'sparkle-twinkle' },
+  { x: '85%', y: '25%', size: 2,   glow: 2, dur: 4.0, delay: 1.1,  anim: 'sparkle-drift' },
+  { x: '42%', y: '72%', size: 1.5, glow: 2, dur: 3.6, delay: 0.5,  anim: 'sparkle-twinkle' },
+  { x: '70%', y: '45%', size: 2,   glow: 3, dur: 4.5, delay: 2.0,  anim: 'sparkle-drift' },
+  { x: '25%', y: '55%', size: 1.5, glow: 2, dur: 3.8, delay: 1.5,  anim: 'sparkle-twinkle' },
+  { x: '92%', y: '70%', size: 2,   glow: 2, dur: 3.4, delay: 0.8,  anim: 'sparkle-drift' },
+  { x: '55%', y: '12%', size: 1.5, glow: 2, dur: 4.2, delay: 2.5,  anim: 'sparkle-twinkle' },
+];
+
 interface HudPanelProps {
   children: ReactNode;
   className?: string;
@@ -166,6 +176,26 @@ export default function HudPanel({
             'linear-gradient(to bottom, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.12) 40%, rgba(255, 255, 255, 0.04) 100%)',
         }}
       />
+
+      {/* ── Layer 6: Sparkles ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[inherit]">
+        {SPARKLES.map((s, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: s.x,
+              top: s.y,
+              width: s.size,
+              height: s.size,
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.90)',
+              boxShadow: `0 0 ${s.glow}px rgba(255, 255, 255, 0.60), 0 0 ${s.glow * 2}px rgba(200, 220, 255, 0.30)`,
+              animation: `${s.anim} ${s.dur}s ease-in-out ${s.delay}s infinite`,
+            }}
+          />
+        ))}
+      </div>
 
       {/* ── Labels ── */}
       {(label || status) && (

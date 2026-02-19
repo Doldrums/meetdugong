@@ -20,7 +20,16 @@ function useSlotRef(
   const last = useRef(position);
   if (active && position) last.current = position;
   const slot = last.current ?? DEFAULT_OVERLAY_SLOTS[key];
-  return { style: slotToCss(slot, occupied), centered: slotNeedsCenterTransform(slot) };
+  return { slot, style: slotToCss(slot, occupied), centered: slotNeedsCenterTransform(slot) };
+}
+
+/** Random position within the frame — sets left, right & top so the panel can't overflow. */
+function randomWidePosition() {
+  const hBias = Math.random(); // 0 = left-aligned, 1 = right-aligned
+  const left = 2 + hBias * 35;         // 2–37%
+  const right = 2 + (1 - hBias) * 35;  // 37–2%
+  const top = 28 + Math.random() * 25; // 28–53%
+  return { left: `${left}%`, right: `${right}%`, top: `${top}%` };
 }
 
 export default function AgentOverlay() {
@@ -39,11 +48,18 @@ export default function AgentOverlay() {
   const thinkingSlot = useSlotRef(agentThinkingPosition, !!agentThinking, 'agentThinking', occupied);
   const eventSlot = useSlotRef(agentEventPosition, !!agentEvent, 'agentEvent', occupied);
 
-  // Random horizontal offset for thinking panel — re-rolls each time it appears
-  const thinkingOffset = useRef({ left: `${25 + Math.random() * 50}%` });
+  // Random horizontal position for wide-zone panels — re-roll each time they appear
+  const actionOffset = useRef(randomWidePosition());
+  const prevAction = useRef(agentAction);
+  if (agentAction && agentAction !== prevAction.current) {
+    actionOffset.current = randomWidePosition();
+  }
+  prevAction.current = agentAction;
+
+  const thinkingOffset = useRef(randomWidePosition());
   const prevThinking = useRef(agentThinking);
   if (agentThinking && agentThinking !== prevThinking.current) {
-    thinkingOffset.current = { left: `${25 + Math.random() * 50}%` };
+    thinkingOffset.current = randomWidePosition();
   }
   prevThinking.current = agentThinking;
 
@@ -63,8 +79,10 @@ export default function AgentOverlay() {
       {/* Action feed */}
       <AnimatedPresence
         show={!!agentAction}
-        className={actionSlot.centered ? '-translate-x-1/2' : ''}
-        style={actionSlot.style}
+        className={actionSlot.centered && actionSlot.slot !== 'mid-wide' ? '-translate-x-1/2' : ''}
+        style={actionSlot.slot === 'mid-wide'
+          ? { ...actionSlot.style, ...actionOffset.current }
+          : actionSlot.style}
         duration={400}
         particleColor="rgba(80, 180, 255, 0.9)"
       >
@@ -74,8 +92,10 @@ export default function AgentOverlay() {
       {/* Thinking */}
       <AnimatedPresence
         show={!!agentThinking}
-        className={thinkingSlot.centered ? '-translate-x-1/2' : ''}
-        style={{ ...thinkingSlot.style, ...thinkingOffset.current }}
+        className={thinkingSlot.centered && thinkingSlot.slot !== 'mid-wide' ? '-translate-x-1/2' : ''}
+        style={thinkingSlot.slot === 'mid-wide'
+          ? { ...thinkingSlot.style, ...thinkingOffset.current }
+          : thinkingSlot.style}
         duration={400}
         particleColor="rgba(160, 120, 255, 0.9)"
       >

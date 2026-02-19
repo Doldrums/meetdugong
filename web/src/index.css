@@ -117,6 +117,20 @@
   40%           { opacity: 1; }
 }
 
+/* Glass sparkle twinkle */
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50%      { opacity: 1; transform: scale(1); }
+}
+
+/* Sparkle drift — slight float */
+@keyframes sparkle-drift {
+  0%, 100% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  25%      { transform: translate(1px, -1px) scale(1); opacity: 0.9; }
+  50%      { transform: translate(-1px, 1px) scale(0.8); opacity: 0.5; }
+  75%      { transform: translate(1px, 0) scale(1.1); opacity: 1; }
+}
+
 /* ── Base Layer ──────────────────────────────────────────── */
 @layer base {
   body {

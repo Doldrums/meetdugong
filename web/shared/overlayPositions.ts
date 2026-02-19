@@ -6,11 +6,11 @@ export const ALL_SLOTS: OverlaySlot[] = ['left-top', 'center-top', 'right-top', 
 
 // Base CSS per zone — maxHeight is computed dynamically via slotToCss()
 const SLOT_BASE: Record<OverlaySlot, React.CSSProperties> = {
-  'left-top':    { top: '1%',    left: '1%',  maxWidth: '31%',  overflow: 'hidden' },
-  'center-top':  { top: '1%',    left: '50%', maxWidth: '31%',  overflow: 'hidden' },
-  'right-top':   { top: '1%',    right: '1%', maxWidth: '31%',  overflow: 'hidden' },
-  'left-mid':    { top: '13.5%', left: '1%',  maxWidth: '31%',  overflow: 'hidden' },
-  'right-mid':   { top: '13.5%', right: '1%', maxWidth: '31%',  overflow: 'hidden' },
+  'left-top':    { top: '1%',    left: '1%',  maxWidth: '42%',  overflow: 'hidden' },
+  'center-top':  { top: '1%',    left: '50%', maxWidth: '42%',  overflow: 'hidden' },
+  'right-top':   { top: '1%',    right: '1%', maxWidth: '42%',  overflow: 'hidden' },
+  'left-mid':    { top: '13.5%', left: '1%',  maxWidth: '42%',  overflow: 'hidden' },
+  'right-mid':   { top: '13.5%', right: '1%', maxWidth: '42%',  overflow: 'hidden' },
   'mid-wide':    { top: '30%',   left: '50%', maxWidth: '96%',  overflow: 'hidden' },
   'bottom':      { bottom: '3%', left: '50%', maxWidth: '96%',  overflow: 'hidden' },
 };
@@ -112,7 +112,7 @@ export const ZONE_PREFERENCES: Record<string, OverlaySlot[]> = {
   qr:            ['bottom', 'right-mid', 'left-mid', 'right-top', 'left-top'],
   card:          ['right-mid', 'left-mid', 'bottom'],
   agentState:    ['left-top', 'center-top', 'right-top', 'left-mid', 'right-mid', 'bottom'],
-  agentAction:   ['left-mid', 'right-mid', 'left-top', 'right-top', 'bottom'],
+  agentAction:   ['mid-wide', 'left-mid', 'right-mid', 'bottom'],
   agentThinking: ['mid-wide', 'bottom'],
   agentEvent:    ['bottom'],
 };
@@ -122,7 +122,7 @@ export const DEFAULT_OVERLAY_SLOTS: Record<string, OverlaySlot> = {
   qr:            'bottom',
   card:          'right-mid',
   agentState:    'left-top',
-  agentAction:   'left-mid',
+  agentAction:   'mid-wide',
   agentThinking: 'mid-wide',
   agentEvent:    'bottom',
 };
