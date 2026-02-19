@@ -21,7 +21,7 @@ export default function VideoLayer({ clips, onClipStarted, onClipEnded, onVideoS
     <div className="relative w-full h-full">
       <video
         ref={vs.videoARef}
-        className="absolute inset-0 w-full h-full object-contain"
+        className="absolute inset-0 w-full h-full object-cover"
         style={{ zIndex: 2 }}
         muted
         playsInline
@@ -31,7 +31,7 @@ export default function VideoLayer({ clips, onClipStarted, onClipEnded, onVideoS
       />
       <video
         ref={vs.videoBRef}
-        className="absolute inset-0 w-full h-full object-contain"
+        className="absolute inset-0 w-full h-full object-cover"
         style={{ zIndex: 1 }}
         muted
         playsInline

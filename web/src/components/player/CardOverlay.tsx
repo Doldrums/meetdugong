@@ -72,6 +72,10 @@ function AnimatedCard({
   const [particles, setParticles] = useState(false);
   const [visible, setVisible] = useState(false);
   const delayRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const floatRef = useRef({
+    duration: 3.5 + Math.random() * 2,
+    delay: Math.random() * -5,
+  });
 
   useEffect(() => {
     clearTimeout(delayRef.current);
@@ -91,9 +95,14 @@ function AnimatedCard({
 
   const isRight = card.position !== 'left';
 
+  const floatStyle = visible
+    ? { animation: `overlay-float ${floatRef.current.duration}s ease-in-out ${floatRef.current.delay}s infinite` }
+    : undefined;
+
   return (
     <div
-      className={`absolute top-[10%] ${isRight ? 'right-[5%]' : 'left-[5%]'} w-[35%] max-w-80`}
+      className={`absolute top-[8%] ${isRight ? 'right-[4%]' : 'left-[4%]'} w-[55%] max-w-80`}
+      style={floatStyle}
     >
       {/* Glass panel — delayed reveal */}
       <div

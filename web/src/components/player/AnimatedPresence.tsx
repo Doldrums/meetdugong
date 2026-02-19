@@ -29,6 +29,11 @@ export default function AnimatedPresence({
   const [visible, setVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const delayRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  // Stable random float params so each instance bobs independently
+  const floatRef = useRef({
+    duration: 3.5 + Math.random() * 2,
+    delay: Math.random() * -5,
+  });
 
   useEffect(() => {
     clearTimeout(timerRef.current);
@@ -58,9 +63,14 @@ export default function AnimatedPresence({
 
   if (!render) return null;
 
+  const floatStyle = visible
+    ? { animation: `overlay-float ${floatRef.current.duration}s ease-in-out ${floatRef.current.delay}s infinite` }
+    : undefined;
+
   return (
     <div
       className={className}
+      style={floatStyle}
     >
       {/* Glass panel — delayed reveal */}
       <div

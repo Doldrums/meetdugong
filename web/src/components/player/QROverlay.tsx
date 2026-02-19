@@ -11,7 +11,7 @@ export default function QROverlay() {
   return (
     <AnimatedPresence
       show={!!qrUrl}
-      className="absolute bottom-[15%] right-[5%]"
+      className="absolute bottom-[12%] left-1/2 -translate-x-1/2"
       duration={400}
       particleColor="rgba(180, 100, 240, 0.9)"
     >

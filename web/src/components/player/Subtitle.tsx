@@ -11,7 +11,7 @@ export default function Subtitle() {
   return (
     <AnimatedPresence
       show={!!text}
-      className="absolute bottom-[8%] left-1/2 -translate-x-1/2 max-w-[80%]"
+      className="absolute bottom-[6%] left-1/2 -translate-x-1/2 max-w-[90%]"
       duration={400}
       particleColor="rgba(160, 120, 255, 0.9)"
     >

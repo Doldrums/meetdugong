@@ -31,6 +31,11 @@
   50%      { transform: translateY(-3px); }
 }
 
+@keyframes overlay-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
 /* ── Player Overlay — Liquid Glass ─────────────────────────── */
 
 /* Entrance animation */

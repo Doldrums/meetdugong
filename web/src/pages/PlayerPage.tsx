@@ -83,7 +83,7 @@ export default function PlayerPage() {
 
   return (
     <div className="h-screen w-screen bg-black flex items-center justify-center overflow-hidden">
-      <div className="relative" style={{ width: '100vmin', height: '100vmin' }}>
+      <div className="relative" style={{ width: 'min(100vw, calc(100vh * 9 / 16))', height: 'min(100vh, calc(100vw * 16 / 9))' }}>
         {clips.length > 0 && (
           <VideoLayer clips={clips} onVideoSwitch={vs} />
         )}
