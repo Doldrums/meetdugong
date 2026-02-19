@@ -16,6 +16,7 @@ export default defineConfig({
       '/event': 'http://localhost:3001',
       '/status': 'http://localhost:3001',
       '/manifest': 'http://localhost:3001',
+      '/scenarios': 'http://localhost:3001',
     },
   },
 });

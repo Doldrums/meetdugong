@@ -6,6 +6,7 @@ import type {
   ClipManifest,
   CharacterManifest,
   CharacterStateConfig,
+  ScenarioDefinition,
 } from '@shared/types.js';
 import { FSM } from './fsm.js';
 import { WSSServer } from './ws-server.js';
@@ -41,6 +42,10 @@ export class Orchestrator {
 
   getActiveManifest(): ClipManifest {
     return this.getActiveCharacter().clips;
+  }
+
+  getActiveScenarios(): ScenarioDefinition[] {
+    return this.getActiveCharacter().scenarios;
   }
 
   getCharacterList(): Array<{ id: string; name: string }> {

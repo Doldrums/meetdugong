@@ -251,19 +251,20 @@ export function useVideoSwitch({ clips, onClipStarted, onClipEnded, onClipsChang
     notifyQueue();
   }, [pickRandomClip, preloadOnStandby, notifyQueue]);
 
-  // Init: play first clip on A
+  // Init: play first clip on A (only on first boot when nothing is playing)
   useEffect(() => {
     if (clips.length === 0) return;
     const a = videoARef.current;
+    const b = videoBRef.current;
     if (!a) return;
-    if (a.src && !a.paused) return;
+    // Skip if any video is currently playing — swap logic handles clip pool changes
+    if ((a.src && !a.paused) || (b?.src && !b.paused)) return;
 
     const firstClip = pickRandomClip();
     if (!firstClip) return;
 
     // Ensure A is on top
     a.style.zIndex = '2';
-    const b = videoBRef.current;
     if (b) b.style.zIndex = '1';
 
     a.preload = 'auto';

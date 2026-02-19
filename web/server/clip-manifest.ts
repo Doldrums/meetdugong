@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import type { ClipManifest, ClipInfo, BridgeClip, CharacterConfig, CharacterManifest } from '@shared/types.js';
+import type { ClipManifest, ClipInfo, BridgeClip, CharacterConfig, CharacterManifest, ScenarioDefinition } from '@shared/types.js';
 
 function parseBridgeFilename(filename: string, clipPath: string): BridgeClip | null {
   // Expected format: from_to_suffix.mp4, e.g. "idle_to_show_right.mp4"
@@ -80,6 +80,17 @@ function scanCharacterClips(charDir: string, characterId: string): ClipManifest 
   return manifest;
 }
 
+export function loadCharacterScenarios(charDir: string): ScenarioDefinition[] {
+  const scenariosPath = path.join(charDir, 'scenarios.json');
+  if (!fs.existsSync(scenariosPath)) return [];
+  try {
+    const raw = fs.readFileSync(scenariosPath, 'utf-8');
+    return JSON.parse(raw) as ScenarioDefinition[];
+  } catch {
+    return [];
+  }
+}
+
 export function scanAllCharacters(contentDir: string): Map<string, CharacterManifest> {
   const characters = new Map<string, CharacterManifest>();
 
@@ -93,6 +104,7 @@ export function scanAllCharacters(contentDir: string): Map<string, CharacterMani
 
     const characterId = entry.name;
     const clips = scanCharacterClips(charDir, characterId);
+    const scenarios = loadCharacterScenarios(charDir);
     const states = ['IDLE', ...Object.keys(config.states)];
 
     characters.set(characterId, {
@@ -102,6 +114,7 @@ export function scanAllCharacters(contentDir: string): Map<string, CharacterMani
       states,
       stateConfigs: config.states,
       clips,
+      scenarios,
     });
 
     console.log(
@@ -109,7 +122,8 @@ export function scanAllCharacters(contentDir: string): Map<string, CharacterMani
       `${clips.bridges.length} bridges, ` +
       `${clips.interrupts.length} interrupts, ` +
       `${clips.utility.length} utility, ` +
-      `${clips.actions.length} actions`
+      `${clips.actions.length} actions, ` +
+      `${scenarios.length} scenarios`
     );
   }
 

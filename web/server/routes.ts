@@ -17,6 +17,10 @@ export function createRoutes(orchestrator: Orchestrator): Router {
     res.json(orchestrator.getCharacterList());
   });
 
+  router.get('/scenarios', (_req, res) => {
+    res.json(orchestrator.getActiveScenarios());
+  });
+
   router.post('/event', (req, res) => {
     const event = req.body as ControlEvent;
     if (!event || !event.type) {

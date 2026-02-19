@@ -16,6 +16,22 @@ export interface CharacterConfig {
   states: Record<string, CharacterStateConfig>;
 }
 
+// Scenario types
+export interface ScenarioStep {
+  state?: FSMState;
+  overlays?: ControlEvent[];
+  delayMs: number;
+  label?: string;
+}
+
+export interface ScenarioDefinition {
+  id: string;
+  name: string;
+  description: string;
+  requiredStates?: string[];
+  steps: ScenarioStep[];
+}
+
 export interface CharacterManifest {
   id: string;
   name: string;
@@ -23,6 +39,7 @@ export interface CharacterManifest {
   states: string[];                              // ['IDLE', ...] always includes IDLE
   stateConfigs: Record<string, CharacterStateConfig>;
   clips: ClipManifest;
+  scenarios: ScenarioDefinition[];
 }
 
 // Clip categories

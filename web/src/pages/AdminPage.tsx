@@ -6,13 +6,15 @@ import SystemStatus from '../components/admin/SystemStatus';
 import FSMControls from '../components/admin/FSMControls';
 import StageVisualsTab from '../components/admin/StageVisualsTab';
 import EventLog from '../components/admin/EventLog';
+import ScenariosTab from '../components/admin/ScenariosTab';
 
-type Tab = 'general' | 'fsm' | 'overlays' | 'logs';
+type Tab = 'general' | 'fsm' | 'overlays' | 'scenarios' | 'logs';
 
 const TABS: { key: Tab; label: string; shortLabel: string }[] = [
   { key: 'general', label: 'Live Status', shortLabel: 'Status' },
   { key: 'fsm', label: 'Character', shortLabel: 'FSM' },
   { key: 'overlays', label: 'Stage Visuals', shortLabel: 'Visuals' },
+  { key: 'scenarios', label: 'Scenarios', shortLabel: 'Scenes' },
   { key: 'logs', label: 'Activity', shortLabel: 'Logs' },
 ];
 
@@ -108,6 +110,7 @@ export default function AdminPage() {
           {activeTab === 'general' && <SystemStatus onSend={handleSend} />}
           {activeTab === 'fsm' && <FSMControls onSend={handleSend} />}
           {activeTab === 'overlays' && <StageVisualsTab onSend={handleSend} />}
+          {activeTab === 'scenarios' && <ScenariosTab onSend={handleSend} />}
           {activeTab === 'logs' && <EventLog />}
         </div>
       </div>

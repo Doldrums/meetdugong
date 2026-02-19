@@ -1,0 +1,91 @@
+[
+  {
+    "id": "campus-tour",
+    "name": "Campus Tour",
+    "description": "Walk prospective students through MBZUAI campus highlights — labs, library, common areas.",
+    "requiredStates": ["HAPPY", "SPEAK", "THINK"],
+    "steps": [
+      { "state": "GREETING", "label": "Greet visitor", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Welcome to MBZUAI! Let me show you around campus.", "ttlMs": 4000 }], "delayMs": 4000 },
+      { "state": "SPEAK", "label": "Show research labs", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.show", "id": "lab-card", "title": "AI Research Labs", "subtitle": "State-of-the-art GPU clusters & robotics lab", "position": "right-mid" }], "delayMs": 5000 },
+      { "overlays": [{ "type": "overlay.card.hide", "id": "lab-card" }], "delayMs": 500 },
+      { "state": "THINK", "label": "Reflect on facilities", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Our library has 24/7 access with dedicated study pods.", "ttlMs": 4000 }], "delayMs": 4000 },
+      { "state": "SPEAK", "label": "Show common areas", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.show", "id": "commons-card", "title": "Student Commons", "subtitle": "Cafeteria, lounge & gaming zone", "position": "left-mid" }], "delayMs": 5000 },
+      { "overlays": [{ "type": "overlay.card.hide", "id": "commons-card" }], "delayMs": 500 },
+      { "state": "HAPPY", "label": "Wrap up tour", "delayMs": 2000 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Thanks for visiting! Scan the QR code to apply.", "ttlMs": 5000 }, { "type": "overlay.qr.show", "url": "https://mbzuai.ac.ae/admissions", "position": "right-mid", "ttlMs": 6000 }], "delayMs": 6000 },
+      { "overlays": [{ "type": "overlay.clearAll" }], "delayMs": 500 }
+    ]
+  },
+  {
+    "id": "student-qa",
+    "name": "Student Q&A",
+    "description": "Interactive Q&A session answering common student questions about life at MBZUAI.",
+    "requiredStates": ["HAPPY", "THINK", "SPEAK", "GREETING"],
+    "steps": [
+      { "state": "GREETING", "label": "Welcome students", "delayMs": 2500 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Hi there! Got questions about MBZUAI? Ask away!", "ttlMs": 3500 }], "delayMs": 3500 },
+      { "state": "THINK", "label": "Listen to question", "delayMs": 4000 },
+      { "overlays": [{ "type": "overlay.agent.thinking", "text": "Processing student question...", "steps": ["Understanding query", "Searching knowledge base"] }], "delayMs": 3000 },
+      { "state": "THINK", "label": "Formulate answer", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.agent.thinking.clear" }], "delayMs": 300 },
+      { "state": "SPEAK", "label": "Present answer", "delayMs": 2500 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Great question! All programs are fully funded with a monthly stipend.", "ttlMs": 5000 }], "delayMs": 5000 },
+      { "state": "THINK", "label": "Next question", "delayMs": 3500 },
+      { "state": "SPEAK", "label": "Answer follow-up", "delayMs": 2500 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Campus housing is provided for all students.", "ttlMs": 4000 }], "delayMs": 4000 },
+      { "state": "HAPPY", "label": "Close Q&A", "delayMs": 2000 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Thanks for your questions! Visit our FAQ for more.", "ttlMs": 4000 }], "delayMs": 4000 },
+      { "overlays": [{ "type": "overlay.clearAll" }], "delayMs": 500 }
+    ]
+  },
+  {
+    "id": "enrollment-info",
+    "name": "Enrollment Info",
+    "description": "Walk through the enrollment process — requirements, deadlines, and how to apply.",
+    "requiredStates": ["GREETING", "SPEAK", "THINK", "HAPPY"],
+    "steps": [
+      { "state": "GREETING", "label": "Introduce enrollment", "delayMs": 2500 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Let me walk you through our enrollment process.", "ttlMs": 3500 }], "delayMs": 3500 },
+      { "state": "SPEAK", "label": "Show requirements", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.show", "id": "req-card", "title": "Admission Requirements", "subtitle": "Bachelor's in CS/Math/Engineering, GRE optional", "position": "right-mid" }], "delayMs": 5000 },
+      { "state": "THINK", "label": "Explain deadlines", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.hide", "id": "req-card" }], "delayMs": 300 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Application deadline: March 31. Early decision by January 15.", "ttlMs": 4500 }], "delayMs": 4500 },
+      { "state": "SPEAK", "label": "Show programs", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.show", "id": "prog-card", "title": "Graduate Programs", "subtitle": "MSc & PhD in ML, NLP, and Computer Vision", "position": "left-mid" }], "delayMs": 5000 },
+      { "overlays": [{ "type": "overlay.card.hide", "id": "prog-card" }], "delayMs": 300 },
+      { "state": "HAPPY", "label": "Call to action", "delayMs": 2000 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Ready to apply? Scan below to start your application.", "ttlMs": 5000 }, { "type": "overlay.qr.show", "url": "https://mbzuai.ac.ae/apply", "position": "right-mid", "ttlMs": 6000 }], "delayMs": 6000 },
+      { "overlays": [{ "type": "overlay.clearAll" }], "delayMs": 500 }
+    ]
+  },
+  {
+    "id": "research-showcase",
+    "name": "Research Showcase",
+    "description": "Highlight MBZUAI's cutting-edge research areas and recent publications.",
+    "requiredStates": ["GREETING", "SPEAK", "THINK", "HAPPY", "ADJUSTCAP"],
+    "steps": [
+      { "state": "GREETING", "label": "Introduce research", "delayMs": 2500 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "MBZUAI is a world-leading AI research university. Let me show you our work.", "ttlMs": 4500 }], "delayMs": 4500 },
+      { "state": "THINK", "label": "Present NLP research", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.show", "id": "nlp-card", "title": "Natural Language Processing", "subtitle": "Arabic NLP, multilingual models & LLM safety", "position": "right-mid" }], "delayMs": 5000 },
+      { "overlays": [{ "type": "overlay.agent.action", "action": "Analyzing", "detail": "Recent NLP publications", "tool": "Scholar Search" }], "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.agent.action.clear" }], "delayMs": 300 },
+      { "overlays": [{ "type": "overlay.card.hide", "id": "nlp-card" }], "delayMs": 300 },
+      { "state": "SPEAK", "label": "Present CV research", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.show", "id": "cv-card", "title": "Computer Vision", "subtitle": "3D reconstruction, medical imaging & autonomous systems", "position": "left-mid" }], "delayMs": 5000 },
+      { "overlays": [{ "type": "overlay.card.hide", "id": "cv-card" }], "delayMs": 300 },
+      { "state": "ADJUSTCAP", "label": "Adjust cap", "delayMs": 3000 },
+      { "state": "THINK", "label": "Present ML research", "delayMs": 3000 },
+      { "overlays": [{ "type": "overlay.card.show", "id": "ml-card", "title": "Machine Learning", "subtitle": "Reinforcement learning, optimization & federated learning", "position": "right-mid" }], "delayMs": 5000 },
+      { "overlays": [{ "type": "overlay.card.hide", "id": "ml-card" }], "delayMs": 300 },
+      { "state": "HAPPY", "label": "Closing", "delayMs": 2000 },
+      { "overlays": [{ "type": "overlay.subtitle.set", "text": "Explore our publications and join our research community!", "ttlMs": 4000 }, { "type": "overlay.qr.show", "url": "https://mbzuai.ac.ae/research", "position": "right-mid", "ttlMs": 5000 }], "delayMs": 5000 },
+      { "overlays": [{ "type": "overlay.clearAll" }], "delayMs": 500 }
+    ]
+  }
+]

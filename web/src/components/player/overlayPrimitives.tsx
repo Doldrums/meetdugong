@@ -45,9 +45,9 @@ export const SF_FONT =
 export function SubtitlePanel({ text }: { text: string }) {
   return (
     <HudPanel tint={SUBTITLE_TINT} style={{ borderRadius: 24 }}>
-      <div className="px-8 py-4 text-center whitespace-nowrap">
+      <div className="px-8 py-4 text-center whitespace-pre-line">
         <span
-          className="text-lg font-semibold leading-snug tracking-[-0.01em] whitespace-nowrap"
+          className="text-lg font-semibold leading-snug tracking-[-0.01em] whitespace-pre-line"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: '0 1px 6px rgba(80, 60, 160, 0.40)',
@@ -104,7 +104,7 @@ export function CardPanel({
       {/* Content */}
       <div className="px-4 pb-4 pt-3 space-y-1.5" style={{ fontFamily: SF_FONT }}>
         <h3
-          className="font-bold text-base leading-tight whitespace-nowrap"
+          className="font-bold text-base leading-tight whitespace-pre-line"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: '0 1px 4px rgba(40, 80, 160, 0.35)',
@@ -115,7 +115,7 @@ export function CardPanel({
 
         {card.subtitle && (
           <p
-            className="text-sm leading-snug whitespace-nowrap"
+            className="text-sm leading-snug whitespace-pre-line"
             style={{
               color: 'rgba(255, 255, 255, 0.65)',
               textShadow: '0 1px 3px rgba(40, 80, 160, 0.20)',
@@ -413,7 +413,7 @@ export function ThinkingPanel({ data }: { data: AgentThinkingData }) {
         {/* Thinking text with animated dots */}
         <div className="flex items-center gap-2">
           <span
-            className="text-base font-semibold whitespace-nowrap"
+            className="text-base font-semibold whitespace-pre-line"
             style={{
               color: 'rgba(255, 255, 255, 0.90)',
               textShadow: '0 0 12px rgba(140, 80, 240, 0.50)',
@@ -511,7 +511,7 @@ export function EventToastPanel({ data }: { data: AgentEventData }) {
 
         {/* Summary */}
         <span
-          className="text-xs font-semibold whitespace-nowrap"
+          className="text-xs font-semibold whitespace-pre-line"
           style={{
             color: 'rgba(255, 255, 255, 0.95)',
             textShadow: '0 1px 4px rgba(0,0,0,0.50), 0 0 8px rgba(0,0,0,0.25)',

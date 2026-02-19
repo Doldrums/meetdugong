@@ -7,7 +7,7 @@ import AmbientSparkles from './AmbientSparkles';
 
 export default function OverlayLayer() {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 10 }}>
+    <div data-overlay-layer className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 10 }}>
       <AmbientSparkles />
       <PositionDebugOverlay />
       <Subtitle />
