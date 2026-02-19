@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOverlayStore, type CardOverlayData } from '../../stores/overlayStore';
+import { slotToCss, slotNeedsCenterTransform, DEFAULT_OVERLAY_SLOTS } from '@shared/overlayPositions';
 import ParticleBurst from './ParticleBurst';
 import { CardPanel } from './overlayPrimitives';
 
@@ -93,7 +94,9 @@ function AnimatedCard({
     return () => clearTimeout(delayRef.current);
   }, [active]);
 
-  const isRight = card.position !== 'left';
+  const slot = card.position ?? DEFAULT_OVERLAY_SLOTS.card;
+  const posStyle = slotToCss(slot);
+  const centered = slotNeedsCenterTransform(slot);
 
   const floatStyle = visible
     ? { animation: `overlay-float ${floatRef.current.duration}s ease-in-out ${floatRef.current.delay}s infinite` }
@@ -101,8 +104,8 @@ function AnimatedCard({
 
   return (
     <div
-      className={`absolute top-[8%] ${isRight ? 'right-[4%]' : 'left-[4%]'} w-[55%] max-w-80`}
-      style={floatStyle}
+      className={`w-[55%] max-w-80 ${centered ? '-translate-x-1/2' : ''}`}
+      style={{ ...posStyle, ...floatStyle }}
     >
       {/* Glass panel — delayed reveal */}
       <div

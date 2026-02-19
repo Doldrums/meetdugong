@@ -73,7 +73,7 @@ export function useWebSocket(
       case 'overlay.applied':
         break;
       case 'overlay.subtitle.set':
-        useOverlayStore.getState().setSubtitle(msg.text, msg.ttlMs);
+        useOverlayStore.getState().setSubtitle(msg.text, msg.ttlMs, msg.position);
         break;
       case 'overlay.subtitle.clear':
         useOverlayStore.getState().clearSubtitle();
@@ -91,7 +91,7 @@ export function useWebSocket(
         useOverlayStore.getState().clearAll();
         break;
       case 'overlay.qr.show':
-        useOverlayStore.getState().showQR(msg.url, msg.ttlMs);
+        useOverlayStore.getState().showQR(msg.url, msg.ttlMs, msg.position);
         break;
       case 'overlay.qr.hide':
         useOverlayStore.getState().hideQR();
@@ -100,6 +100,7 @@ export function useWebSocket(
         useOverlayStore.getState().setAgentState(
           { state: msg.state, label: msg.label, color: msg.color },
           msg.ttlMs,
+          msg.position,
         );
         break;
       case 'overlay.agent.state.clear':
@@ -109,6 +110,7 @@ export function useWebSocket(
         useOverlayStore.getState().setAgentAction(
           { action: msg.action, detail: msg.detail, tool: msg.tool, progress: msg.progress },
           msg.ttlMs,
+          msg.position,
         );
         break;
       case 'overlay.agent.action.clear':
@@ -118,6 +120,7 @@ export function useWebSocket(
         useOverlayStore.getState().setAgentThinking(
           { text: msg.text ?? 'Reasoning…', steps: msg.steps },
           msg.ttlMs,
+          msg.position,
         );
         break;
       case 'overlay.agent.thinking.clear':
@@ -127,6 +130,7 @@ export function useWebSocket(
         useOverlayStore.getState().setAgentEvent(
           { eventType: msg.eventType, summary: msg.summary },
           msg.ttlMs,
+          msg.position,
         );
         break;
       case 'overlay.agent.clear':

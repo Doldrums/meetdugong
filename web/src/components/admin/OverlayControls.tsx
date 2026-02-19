@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
 import type { ControlEvent } from '@shared/types';
+import type { OverlaySlot } from '@shared/overlayPositions';
+import { DEFAULT_OVERLAY_SLOTS } from '@shared/overlayPositions';
+import PositionPicker from './PositionPicker';
 
 // ── Preset Data ─────────────────────────────────────────────
 
@@ -24,7 +27,7 @@ const MAP_CARD_PRESETS = [
     subtitle: 'HoloBox Installation · Masdar City, Abu Dhabi',
     cta: 'Get directions →',
     imageUrl: 'https://picsum.photos/seed/masdar1/400/200',
-    position: 'left' as const,
+    position: 'top-left' as OverlaySlot,
   },
   {
     key: 'research-center',
@@ -33,7 +36,7 @@ const MAP_CARD_PRESETS = [
     subtitle: 'Embodied Intelligence Lab · Masdar City',
     cta: 'Schedule a visit →',
     imageUrl: 'https://picsum.photos/seed/abudhabi3/400/200',
-    position: 'right' as const,
+    position: 'top-right' as OverlaySlot,
   },
 ];
 
@@ -46,7 +49,7 @@ const IMAGE_CARD_PRESETS = [
     price: 'Intelligence Layer',
     cta: 'Learn more →',
     imageUrl: 'https://picsum.photos/seed/nlplab1/400/200',
-    position: 'right' as const,
+    position: 'top-right' as OverlaySlot,
   },
   {
     key: 'openclaw',
@@ -56,7 +59,7 @@ const IMAGE_CARD_PRESETS = [
     price: 'Orchestration Layer',
     cta: 'Explore →',
     imageUrl: 'https://picsum.photos/seed/cvision2/400/200',
-    position: 'right' as const,
+    position: 'top-right' as OverlaySlot,
   },
   {
     key: 'scene',
@@ -66,7 +69,7 @@ const IMAGE_CARD_PRESETS = [
     price: 'Scene Control Layer',
     cta: 'See demo →',
     imageUrl: 'https://picsum.photos/seed/mlresearch3/400/200',
-    position: 'left' as const,
+    position: 'top-left' as OverlaySlot,
   },
 ];
 
@@ -215,29 +218,34 @@ function Section({
   description,
   badge,
   badgeColor,
+  positionPicker,
   children,
 }: {
   title: string;
   description?: string;
   badge: string;
   badgeColor: string;
+  positionPicker?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <section className="space-y-2">
       <div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <h3 className="section-header">{title}</h3>
-          <span
-            className="glass-badge text-[10px] uppercase tracking-widest font-semibold"
-            style={{
-              background: `${badgeColor}14`,
-              borderColor: `${badgeColor}33`,
-              color: badgeColor,
-            }}
-          >
-            {badge}
-          </span>
+          <div className="flex items-center gap-2">
+            {positionPicker}
+            <span
+              className="glass-badge text-[10px] uppercase tracking-widest font-semibold"
+              style={{
+                background: `${badgeColor}14`,
+                borderColor: `${badgeColor}33`,
+                color: badgeColor,
+              }}
+            >
+              {badge}
+            </span>
+          </div>
         </div>
         {description && (
           <p className="text-[11px] text-white/20 mt-1 leading-relaxed">{description}</p>
@@ -256,6 +264,16 @@ interface OverlayControlsProps {
 
 export default function OverlayControls({ onSend }: OverlayControlsProps) {
   const [sentKey, setSentKey] = useState<string | null>(null);
+
+  // Position state per section
+  const [subtitlePos, setSubtitlePos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.subtitle);
+  const [qrPos, setQrPos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.qr);
+  const [locationCardPos, setLocationCardPos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.card);
+  const [mediaCardPos, setMediaCardPos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.card);
+  const [agentStatePos, setAgentStatePos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.agentState);
+  const [agentActionPos, setAgentActionPos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.agentAction);
+  const [agentThinkingPos, setAgentThinkingPos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.agentThinking);
+  const [agentEventPos, setAgentEventPos] = useState<OverlaySlot>(DEFAULT_OVERLAY_SLOTS.agentEvent);
 
   const send = useCallback(
     (key: string, event: ControlEvent) => {
@@ -287,7 +305,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* Text Overlays */}
       <Section title="Text Overlays" badge="subtitle" badgeColor={SECTION_COLORS.subtitle}
-        description="Subtitle banners rendered on the stage. Auto-dismiss after 30 seconds.">
+        description="Subtitle banners rendered on the stage. Auto-dismiss after 30 seconds."
+        positionPicker={<PositionPicker value={subtitlePos} onChange={setSubtitlePos} />}>
         {SUBTITLE_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -296,7 +315,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
             sent={sentKey === p.key}
             accentColor={SECTION_COLORS.subtitle}
             onClick={() =>
-              send(p.key, { type: 'overlay.subtitle.set', text: p.text, ttlMs: p.ttlMs })
+              send(p.key, { type: 'overlay.subtitle.set', text: p.text, position: subtitlePos, ttlMs: p.ttlMs })
             }
           />
         ))}
@@ -304,7 +323,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* QR Codes */}
       <Section title="QR Codes" badge="qr" badgeColor={SECTION_COLORS.qr}
-        description="Scannable codes projected on the scene for audience interaction.">
+        description="Scannable codes projected on the scene for audience interaction."
+        positionPicker={<PositionPicker value={qrPos} onChange={setQrPos} />}>
         {QR_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -313,7 +333,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
             sent={sentKey === p.key}
             accentColor={SECTION_COLORS.qr}
             onClick={() =>
-              send(p.key, { type: 'overlay.qr.show', url: p.url, ttlMs: 30000 })
+              send(p.key, { type: 'overlay.qr.show', url: p.url, position: qrPos, ttlMs: 30000 })
             }
           />
         ))}
@@ -321,7 +341,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* Map Cards */}
       <Section title="Location Cards" badge="location" badgeColor={SECTION_COLORS.location}
-        description="Spatial cards with venue and installation context for physical deployments.">
+        description="Spatial cards with venue and installation context for physical deployments."
+        positionPicker={<PositionPicker value={locationCardPos} onChange={setLocationCardPos} />}>
         {MAP_CARD_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -337,7 +358,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 subtitle: p.subtitle,
                 cta: p.cta,
                 imageUrl: p.imageUrl,
-                position: p.position,
+                position: locationCardPos,
                 ttlMs: 30000,
               })
             }
@@ -347,7 +368,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* Image Cards */}
       <Section title="Capability Cards" badge="media" badgeColor={SECTION_COLORS.media}
-        description="Rich media panels showcasing Dugong architecture layers and capabilities.">
+        description="Rich media panels showcasing Dugong architecture layers and capabilities."
+        positionPicker={<PositionPicker value={mediaCardPos} onChange={setMediaCardPos} />}>
         {IMAGE_CARD_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -364,7 +386,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 price: p.price,
                 cta: p.cta,
                 imageUrl: p.imageUrl,
-                position: p.position,
+                position: mediaCardPos,
                 ttlMs: 30000,
               })
             }
@@ -397,7 +419,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* Agent State */}
       <Section title="Agent State" badge="state" badgeColor={SECTION_COLORS.agentState}
-        description="Show the current FSM state as a glowing badge on the stage.">
+        description="Show the current FSM state as a glowing badge on the stage."
+        positionPicker={<PositionPicker value={agentStatePos} onChange={setAgentStatePos} />}>
         {AGENT_STATE_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -406,7 +429,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
             sent={sentKey === p.key}
             accentColor={SECTION_COLORS.agentState}
             onClick={() =>
-              send(p.key, { type: 'overlay.agent.state', state: p.state, ttlMs: 30000 })
+              send(p.key, { type: 'overlay.agent.state', state: p.state, position: agentStatePos, ttlMs: 30000 })
             }
           />
         ))}
@@ -414,7 +437,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* Agent Actions */}
       <Section title="Agent Actions" badge="action" badgeColor={SECTION_COLORS.agentAction}
-        description="Show what the agent is currently doing — tool routing, plan execution, search.">
+        description="Show what the agent is currently doing — tool routing, plan execution, search."
+        positionPicker={<PositionPicker value={agentActionPos} onChange={setAgentActionPos} />}>
         {AGENT_ACTION_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -429,6 +453,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 detail: p.detail,
                 tool: p.tool,
                 progress: p.progress,
+                position: agentActionPos,
                 ttlMs: 30000,
               })
             }
@@ -438,7 +463,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* Agent Thinking */}
       <Section title="Thinking / Reasoning" badge="think" badgeColor={SECTION_COLORS.agentThinking}
-        description="Animated thinking indicators with reasoning step visualization.">
+        description="Animated thinking indicators with reasoning step visualization."
+        positionPicker={<PositionPicker value={agentThinkingPos} onChange={setAgentThinkingPos} />}>
         {AGENT_THINKING_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -451,6 +477,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 type: 'overlay.agent.thinking',
                 text: p.text,
                 steps: p.steps,
+                position: agentThinkingPos,
                 ttlMs: 30000,
               })
             }
@@ -460,7 +487,8 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
 
       {/* Agent Events */}
       <Section title="Event Toasts" badge="event" badgeColor={SECTION_COLORS.agentEvent}
-        description="Compact event notifications for transitions, playback, errors, and agent actions.">
+        description="Compact event notifications for transitions, playback, errors, and agent actions."
+        positionPicker={<PositionPicker value={agentEventPos} onChange={setAgentEventPos} />}>
         {AGENT_EVENT_PRESETS.map((p) => (
           <PresetCard
             key={p.key}
@@ -473,6 +501,7 @@ export default function OverlayControls({ onSend }: OverlayControlsProps) {
                 type: 'overlay.agent.event',
                 eventType: p.eventType,
                 summary: p.summary,
+                position: agentEventPos,
                 ttlMs: 8000,
               })
             }

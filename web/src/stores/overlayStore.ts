@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { OverlaySlot } from '@shared/overlayPositions';
 
 export interface CardOverlayData {
   id: string;
@@ -7,7 +8,7 @@ export interface CardOverlayData {
   imageUrl?: string;
   price?: string;
   cta?: string;
-  position?: 'left' | 'right';
+  position?: OverlaySlot;
 }
 
 // --- Agent overlay data ---
@@ -39,6 +40,7 @@ interface OverlayState {
   // Subtitle
   subtitleText: string | null;
   subtitleTimer: ReturnType<typeof setTimeout> | null;
+  subtitlePosition: OverlaySlot | null;
 
   // Cards
   cards: Map<string, CardOverlayData>;
@@ -46,31 +48,36 @@ interface OverlayState {
   // QR
   qrUrl: string | null;
   qrTimer: ReturnType<typeof setTimeout> | null;
+  qrPosition: OverlaySlot | null;
 
   // Agent overlays (OpenClaw)
   agentState: AgentStateData | null;
   agentStateTimer: ReturnType<typeof setTimeout> | null;
+  agentStatePosition: OverlaySlot | null;
   agentAction: AgentActionData | null;
   agentActionTimer: ReturnType<typeof setTimeout> | null;
+  agentActionPosition: OverlaySlot | null;
   agentThinking: AgentThinkingData | null;
   agentThinkingTimer: ReturnType<typeof setTimeout> | null;
+  agentThinkingPosition: OverlaySlot | null;
   agentEvent: AgentEventData | null;
   agentEventTimer: ReturnType<typeof setTimeout> | null;
+  agentEventPosition: OverlaySlot | null;
 
   // Actions
-  setSubtitle: (text: string, ttlMs?: number) => void;
+  setSubtitle: (text: string, ttlMs?: number, position?: OverlaySlot) => void;
   clearSubtitle: () => void;
   showCard: (card: CardOverlayData, ttlMs?: number) => void;
   hideCard: (id: string) => void;
-  showQR: (url: string, ttlMs?: number) => void;
+  showQR: (url: string, ttlMs?: number, position?: OverlaySlot) => void;
   hideQR: () => void;
-  setAgentState: (data: AgentStateData, ttlMs?: number) => void;
+  setAgentState: (data: AgentStateData, ttlMs?: number, position?: OverlaySlot) => void;
   clearAgentState: () => void;
-  setAgentAction: (data: AgentActionData, ttlMs?: number) => void;
+  setAgentAction: (data: AgentActionData, ttlMs?: number, position?: OverlaySlot) => void;
   clearAgentAction: () => void;
-  setAgentThinking: (data: AgentThinkingData, ttlMs?: number) => void;
+  setAgentThinking: (data: AgentThinkingData, ttlMs?: number, position?: OverlaySlot) => void;
   clearAgentThinking: () => void;
-  setAgentEvent: (data: AgentEventData, ttlMs?: number) => void;
+  setAgentEvent: (data: AgentEventData, ttlMs?: number, position?: OverlaySlot) => void;
   clearAgentEvent: () => void;
   clearAllAgent: () => void;
   clearAll: () => void;
@@ -79,35 +86,41 @@ interface OverlayState {
 export const useOverlayStore = create<OverlayState>((set, get) => ({
   subtitleText: null,
   subtitleTimer: null,
+  subtitlePosition: null,
   cards: new Map(),
   qrUrl: null,
   qrTimer: null,
+  qrPosition: null,
   agentState: null,
   agentStateTimer: null,
+  agentStatePosition: null,
   agentAction: null,
   agentActionTimer: null,
+  agentActionPosition: null,
   agentThinking: null,
   agentThinkingTimer: null,
+  agentThinkingPosition: null,
   agentEvent: null,
   agentEventTimer: null,
+  agentEventPosition: null,
 
-  setSubtitle: (text, ttlMs) => {
+  setSubtitle: (text, ttlMs, position) => {
     const prev = get().subtitleTimer;
     if (prev) clearTimeout(prev);
 
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (ttlMs && ttlMs > 0) {
       timer = setTimeout(() => {
-        set({ subtitleText: null, subtitleTimer: null });
+        set({ subtitleText: null, subtitleTimer: null, subtitlePosition: null });
       }, ttlMs);
     }
-    set({ subtitleText: text, subtitleTimer: timer });
+    set({ subtitleText: text, subtitleTimer: timer, subtitlePosition: position ?? null });
   },
 
   clearSubtitle: () => {
     const prev = get().subtitleTimer;
     if (prev) clearTimeout(prev);
-    set({ subtitleText: null, subtitleTimer: null });
+    set({ subtitleText: null, subtitleTimer: null, subtitlePosition: null });
   },
 
   showCard: (card, ttlMs) => {
@@ -135,89 +148,89 @@ export const useOverlayStore = create<OverlayState>((set, get) => ({
     });
   },
 
-  showQR: (url, ttlMs) => {
+  showQR: (url, ttlMs, position) => {
     const prev = get().qrTimer;
     if (prev) clearTimeout(prev);
 
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (ttlMs && ttlMs > 0) {
       timer = setTimeout(() => {
-        set({ qrUrl: null, qrTimer: null });
+        set({ qrUrl: null, qrTimer: null, qrPosition: null });
       }, ttlMs);
     }
-    set({ qrUrl: url, qrTimer: timer });
+    set({ qrUrl: url, qrTimer: timer, qrPosition: position ?? null });
   },
 
   hideQR: () => {
     const prev = get().qrTimer;
     if (prev) clearTimeout(prev);
-    set({ qrUrl: null, qrTimer: null });
+    set({ qrUrl: null, qrTimer: null, qrPosition: null });
   },
 
   // --- Agent overlays ---
 
-  setAgentState: (data, ttlMs) => {
+  setAgentState: (data, ttlMs, position) => {
     const prev = get().agentStateTimer;
     if (prev) clearTimeout(prev);
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (ttlMs && ttlMs > 0) {
-      timer = setTimeout(() => set({ agentState: null, agentStateTimer: null }), ttlMs);
+      timer = setTimeout(() => set({ agentState: null, agentStateTimer: null, agentStatePosition: null }), ttlMs);
     }
-    set({ agentState: data, agentStateTimer: timer });
+    set({ agentState: data, agentStateTimer: timer, agentStatePosition: position ?? null });
   },
 
   clearAgentState: () => {
     const prev = get().agentStateTimer;
     if (prev) clearTimeout(prev);
-    set({ agentState: null, agentStateTimer: null });
+    set({ agentState: null, agentStateTimer: null, agentStatePosition: null });
   },
 
-  setAgentAction: (data, ttlMs) => {
+  setAgentAction: (data, ttlMs, position) => {
     const prev = get().agentActionTimer;
     if (prev) clearTimeout(prev);
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (ttlMs && ttlMs > 0) {
-      timer = setTimeout(() => set({ agentAction: null, agentActionTimer: null }), ttlMs);
+      timer = setTimeout(() => set({ agentAction: null, agentActionTimer: null, agentActionPosition: null }), ttlMs);
     }
-    set({ agentAction: data, agentActionTimer: timer });
+    set({ agentAction: data, agentActionTimer: timer, agentActionPosition: position ?? null });
   },
 
   clearAgentAction: () => {
     const prev = get().agentActionTimer;
     if (prev) clearTimeout(prev);
-    set({ agentAction: null, agentActionTimer: null });
+    set({ agentAction: null, agentActionTimer: null, agentActionPosition: null });
   },
 
-  setAgentThinking: (data, ttlMs) => {
+  setAgentThinking: (data, ttlMs, position) => {
     const prev = get().agentThinkingTimer;
     if (prev) clearTimeout(prev);
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (ttlMs && ttlMs > 0) {
-      timer = setTimeout(() => set({ agentThinking: null, agentThinkingTimer: null }), ttlMs);
+      timer = setTimeout(() => set({ agentThinking: null, agentThinkingTimer: null, agentThinkingPosition: null }), ttlMs);
     }
-    set({ agentThinking: data, agentThinkingTimer: timer });
+    set({ agentThinking: data, agentThinkingTimer: timer, agentThinkingPosition: position ?? null });
   },
 
   clearAgentThinking: () => {
     const prev = get().agentThinkingTimer;
     if (prev) clearTimeout(prev);
-    set({ agentThinking: null, agentThinkingTimer: null });
+    set({ agentThinking: null, agentThinkingTimer: null, agentThinkingPosition: null });
   },
 
-  setAgentEvent: (data, ttlMs) => {
+  setAgentEvent: (data, ttlMs, position) => {
     const prev = get().agentEventTimer;
     if (prev) clearTimeout(prev);
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (ttlMs && ttlMs > 0) {
-      timer = setTimeout(() => set({ agentEvent: null, agentEventTimer: null }), ttlMs);
+      timer = setTimeout(() => set({ agentEvent: null, agentEventTimer: null, agentEventPosition: null }), ttlMs);
     }
-    set({ agentEvent: data, agentEventTimer: timer });
+    set({ agentEvent: data, agentEventTimer: timer, agentEventPosition: position ?? null });
   },
 
   clearAgentEvent: () => {
     const prev = get().agentEventTimer;
     if (prev) clearTimeout(prev);
-    set({ agentEvent: null, agentEventTimer: null });
+    set({ agentEvent: null, agentEventTimer: null, agentEventPosition: null });
   },
 
   clearAllAgent: () => {
@@ -227,10 +240,10 @@ export const useOverlayStore = create<OverlayState>((set, get) => ({
     if (s.agentThinkingTimer) clearTimeout(s.agentThinkingTimer);
     if (s.agentEventTimer) clearTimeout(s.agentEventTimer);
     set({
-      agentState: null, agentStateTimer: null,
-      agentAction: null, agentActionTimer: null,
-      agentThinking: null, agentThinkingTimer: null,
-      agentEvent: null, agentEventTimer: null,
+      agentState: null, agentStateTimer: null, agentStatePosition: null,
+      agentAction: null, agentActionTimer: null, agentActionPosition: null,
+      agentThinking: null, agentThinkingTimer: null, agentThinkingPosition: null,
+      agentEvent: null, agentEventTimer: null, agentEventPosition: null,
     });
   },
 
@@ -245,13 +258,15 @@ export const useOverlayStore = create<OverlayState>((set, get) => ({
     set({
       subtitleText: null,
       subtitleTimer: null,
+      subtitlePosition: null,
       cards: new Map(),
       qrUrl: null,
       qrTimer: null,
-      agentState: null, agentStateTimer: null,
-      agentAction: null, agentActionTimer: null,
-      agentThinking: null, agentThinkingTimer: null,
-      agentEvent: null, agentEventTimer: null,
+      qrPosition: null,
+      agentState: null, agentStateTimer: null, agentStatePosition: null,
+      agentAction: null, agentActionTimer: null, agentActionPosition: null,
+      agentThinking: null, agentThinkingTimer: null, agentThinkingPosition: null,
+      agentEvent: null, agentEventTimer: null, agentEventPosition: null,
     });
   },
 }));

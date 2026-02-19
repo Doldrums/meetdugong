@@ -6,6 +6,8 @@ interface AnimatedPresenceProps {
   show: boolean;
   children: ReactNode;
   className?: string;
+  /** Extra inline styles merged onto the outer wrapper */
+  style?: React.CSSProperties;
   /** Animation duration in ms */
   duration?: number;
   /** Particle glow color */
@@ -21,6 +23,7 @@ export default function AnimatedPresence({
   show,
   children,
   className = '',
+  style: styleProp,
   duration = 400,
   particleColor = 'rgba(255, 255, 255, 0.9)',
 }: AnimatedPresenceProps) {
@@ -70,7 +73,7 @@ export default function AnimatedPresence({
   return (
     <div
       className={className}
-      style={floatStyle}
+      style={{ ...styleProp, ...floatStyle }}
     >
       {/* Glass panel — delayed reveal */}
       <div

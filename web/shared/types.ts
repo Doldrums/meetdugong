@@ -1,3 +1,5 @@
+import type { OverlaySlot } from './overlayPositions';
+
 // FSM States — dynamic, driven by character config.json
 export type FSMState = string;
 
@@ -68,6 +70,7 @@ export interface CharacterSwitchEvent {
 export interface OverlaySubtitleSetEvent {
   type: 'overlay.subtitle.set';
   text: string;
+  position?: OverlaySlot;
   ttlMs?: number;
 }
 
@@ -83,7 +86,7 @@ export interface OverlayCardShowEvent {
   imageUrl?: string;
   price?: string;
   cta?: string;
-  position?: 'left' | 'right';
+  position?: OverlaySlot;
   ttlMs?: number;
 }
 
@@ -99,6 +102,7 @@ export interface OverlayClearAllEvent {
 export interface OverlayQRShowEvent {
   type: 'overlay.qr.show';
   url: string;
+  position?: OverlaySlot;
   ttlMs?: number;
 }
 
@@ -114,6 +118,7 @@ export interface OverlayAgentStateEvent {
   state: string;
   label?: string;
   color?: string;
+  position?: OverlaySlot;
   ttlMs?: number;
 }
 
@@ -129,6 +134,7 @@ export interface OverlayAgentActionEvent {
   detail?: string;
   tool?: string;
   progress?: number;   // 0–1
+  position?: OverlaySlot;
   ttlMs?: number;
 }
 
@@ -142,6 +148,7 @@ export interface OverlayAgentThinkingEvent {
   type: 'overlay.agent.thinking';
   text?: string;
   steps?: string[];
+  position?: OverlaySlot;
   ttlMs?: number;
 }
 
@@ -155,6 +162,7 @@ export interface OverlayAgentEventEvent {
   type: 'overlay.agent.event';
   eventType: string;
   summary: string;
+  position?: OverlaySlot;
   ttlMs?: number;
 }
 
